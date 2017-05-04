@@ -1,0 +1,1003 @@
+\documentclass[]{itmo-student-thesis}
+% \documentclass[specification,annotation]{itmo-student-thesis}
+
+%% Опции пакета:
+%% - specification - если есть, генерируется задание, иначе не генерируется
+%% - annotation - если есть, генерируется аннотация, иначе не генерируется
+%% - times - делает все шрифтом Times New Roman, требует пакета pscyr.
+
+%% Делает запятую в формулах более интеллектуальной, например:
+%% $1,5x$ будет читаться как полтора икса, а не один запятая пять иксов.
+%% Однако если написать $1, 5x$, то все будет как прежде.
+\usepackage{icomma}
+
+%% Данные пакеты необязательны к использованию в бакалаврских/магистерских
+%% Они нужны для иллюстративных целей
+%% Начало
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usepackage{filecontents}
+\begin{filecontents}{bachelor-thesis.bib}
+@inproceedings{ example-english,
+    year        = {2015},
+    booktitle   = {Proceedings of IEEE Congress on Evolutionary Computation},
+    author      = {Maxim Buzdalov and Anatoly Shalyto},
+    title       = {Hard Test Generation for Augmenting Path Maximum Flow
+                   Algorithms using Genetic Algorithms: Revisited},
+    pages       = {2121-2128},
+    langid      = {english}
+}
+
+@article{ example-russian,
+    author      = {Максим Викторович Буздалов},
+    title       = {Генерация тестов для олимпиадных задач по программированию
+                   с использованием генетических алгоритмов},
+    journal     = {Научно-технический вестник {СПбГУ} {ИТМО}},
+    number      = {2(72)},
+    year        = {2011},
+    pages       = {72-77},
+    langid      = {russian}
+}
+
+@article{ unrestricted-jump-evco,
+    author      = {Maxim Buzdalov and Benjamin Doerr and Mikhail Kever},
+    title       = {The Unrestricted Black-Box Complexity of Jump Functions},
+    journal     = {Evolutionary Computation},
+    year        = {2016},
+    note        = {Accepted for publication},
+    langid      = {english},
+    keywords    = {index:wos, index:scopus, labauthor:buzdalov}
+}
+\end{filecontents}
+%% Конец
+
+%% Указываем файл с библиографией.
+\addbibresource{bachelor-thesis.bib}
+
+\begin{document}
+
+\studygroup{M3438}
+\title{Пример оформления бакалаврской работы}
+\author{Волхов Михаил Александрович}{Волхов М.А.}
+\supervisor{Штукенберг Дмитрий Григорьевич}{Штукенберг Д.Г.}{специалист}{тьютор кафедры КТ Университета ИТМО}
+\publishyear{2017}
+%% Дата выдачи задания. Можно не указывать, тогда надо будет заполнить от руки.
+% \startdate{01}{сентября}{2016}
+%% Срок сдачи студентом работы. Можно не указывать, тогда надо будет заполнить от руки.
+% \finishdate{31}{мая}{2017}
+%% Дата защиты. Можно не указывать, тогда надо будет заполнить от руки.
+% \defencedate{15}{июня}{2015}
+
+% \addconsultant{}{канд. физ.-мат. наук, без звания}
+\addconsultant{Йонн Мостовой}{без степени, без звания}
+
+%% Задание
+%%% Техническое задание и исходные данные к работе
+\technicalspec{Требуется разработать систему для тайм-трекинга пользовательских действий с помощью блокчейн-технологии. Алгоритм должен поддерживать многопользовательские действия. Должна быть разрабтана формализация социальных контрактов и система оценки пользовательских действий на основании данных тайм-трекинга. }
+
+%%% Содержание выпускной квалификационной работы (перечень подлежащих разработке вопросов)
+\plannedcontents{Пояснительная записка должна демонстрировать использование наиболее типичных конструкций, возникающих при составлении
+пояснительной записки (перечисления, рисунки, таблицы, листинги, псевдокод), при этом должна быть составлена так, что демонстрируется
+корректность работы стилевого файла. В частности, записка должна содержать не менее двух приложений (для демонстрации нумерации рисунков и таблиц
+по приложениям согласно ГОСТ) и не менее десяти элементов нумерованного перечисления первого уровня вложенности (для демонстрации корректности
+используемого при нумерации набора русских букв).}
+
+%%% Исходные материалы и пособия
+\plannedsources{\begin{enumerate}
+    \item ГОСТ~7.0.11-2011 <<Диссертация и автореферат диссертации>>;
+    \item С.М. Львовский. Набор и верстка в системе \LaTeX;
+    \item предыдущий комплект стилевых файлов, использовавшийся на кафедре компьютерных технологий.
+\end{enumerate}}
+
+%%% Календарный план
+\addstage{Ознакомление с имеющимися решениями в сфере тайм-трекинга}{02.2017}
+\addstage{Ознакомление с практиками построения современных криптовалют}{02.2017}
+\addstage{Реализация общего вида алгоритма}{03.2017}
+\addstage{Написание пояснительной записки с проработанным формальным фреймворком}{04.2015}
+\addstage{Доработка записки и доказательств}{05.2015}
+
+%%% Цель исследования
+\researchaim{Разработка тайм-трекинг системы с контрактами как надстройки над криптовалютой}
+
+%%% Задачи, решаемые в ВКР
+\researchtargets{\begin{enumerate}
+    \item соответствие титульной страницы, задания и аннотации шаблонам, принятым в настоящее время на
+    кафедре;
+    \item соответствие содержательной части пояснительной записки требованиям ГОСТ~7.0.11-2011 <<Диссертация и
+    автореферат диссертации>>;
+    \item относительное удобство в использовании~--- указание данных об авторе и научном руководителе один раз
+    и в одном месте, автоматический подсчет числа тех или иных источников.
+\end{enumerate}}
+
+%%% Использование современных пакетов компьютерных программ и технологий
+\advancedtechnologyusage{Была использована система компьютерной верстки \LaTeX, а в
+рамках нее следующие пакеты, в порядке появления в стилевом файле: babel, csquotes,
+geometry, amsmath, amssymb, amsthm,
+amsfonts, amsextra, graphicx, xcolor, colortbl, tabu, caption, floatrow, algorithm,
+algorithmicx, algpseudocode, enumitem, setspace, biblatex (а именно biber), lastpage,
+totcount, longtable, listings, chngcntr, titlesec, titletoc, ifpdf.}
+
+%%% Краткая характеристика полученных результатов
+\researchsummary{Была разработана система Timecoin поверх криптовалюты Ouroboros, а также }
+
+%%% Гранты, полученные при выполнении работы
+\researchfunding{Автор разрабатывал этот стилевик исключительно за свой счет и на
+добровольных началах. Однако значительная его часть была бы невозможна, если бы
+автор не написал в свое время кандидатскую диссертацию в \LaTeX,
+а также не отвечал за формирование кучи научно-технических отчетов по гранту,
+известному как <<5-в-100>>, что происходило при государственной финансовой поддержке
+ведущих университетов Российской Федерации (субсидия 074-U01).}
+
+%%% Наличие публикаций и выступлений на конференциях по теме выпускной работы
+\researchpublications{По теме этой работы я (к счастью!) ничего не публиковал.
+\begin{refsection}
+Однако покажу, как можно ссылаться на свои публикации из списка литературы:
+\nocite{example-english, example-russian}
+\printannobibliography
+\end{refsection}
+}
+
+%% Эта команда генерирует титульный лист и аннотацию.
+\maketitle{Бакалавр}
+
+%% Оглавление
+\tableofcontents
+
+%% Макрос для введения. Совместим со старым стилевиком.
+\startprefacepage
+
+This paper addresses the problem of collective time tracking in
+relation to contracts and their fulfillment, presenting Timecoin --
+the protocol built over Ouroboros cryptocurrency. It allows creating
+and supporting contracts with obligations, tracking activities and
+measuring user’s effort together with having an ability to reliably
+share and prove this information.
+
+Different blockchain-based solutions showed that it is possible to
+maintain a network solving a particular problems without compromising
+user trust. Blockchain approach was taken in different areas of
+computer science giving the rise to cryptocurrencies (SOURCE),
+improving distributed storages solutions (SOURCE), voting systems
+(SOURCE), etc. It suggests a simple and reliable way to build up a
+network with huge amount of nodes (which is a severe limitation of
+BFT-based distributed protocols) allowing great horizontal scalability
+and security guarantees against adversary agents.
+
+Organisational and time-tracking tools are a completely orthogonal
+software branch. Solutions like org-mode allow users to effectively
+maintain a set of tasks and notes. It provides features like task
+planning, scheduling and agenda views so you never miss an important
+meeting. More interestingly, org-mode has time-tracking support,
+giving user possibility to map his set of tasks on the timeline. This
+gives birth to even more effective life and habits analysis,
+procrastination detection and so on. Though there are more complex
+tasks that one might want to be solved. For example, user may want
+automatically assign himself a certain rating over the period that
+correlates with his productivity. Multi-person time tracking is a
+time-tracking utility feature that allows several parties mark that
+they were doing the certain action together (collective activity). As
+for my knowledge, there are no tools that support this feature
+yet. This idea can be expanded to multi-person contracts. If there is
+enough knowledge about people agreements, rating calculation plus we
+have time-tracking capability of the system, the whole contract
+evaluation process can be automated.
+
+People change contracts and may want to preserve the history. There is
+a pretty strong evidence that if you’re able to conform to your own
+obligations over time, people can rely on you. Sharing this
+information in a reliable way is where blockchain comes
+in. Distributed coin-like time tracker also solves the problem of a
+single trust entity and about general tracking collaboration (which is
+non-trivial for org-mode, for example, due to high complexity of
+merging conflicts SOURCE?). Timecoin is a solution addressing this
+particular problem, hopefully providing a basic framework to operate.
+
+
+%% Начало содержательной части.
+\chapter{Обзор предметной области}
+
+% Пример ссылок на литературные источники: \cite{example-english, example-russian, unrestricted-jump-evco}.
+
+\section{Decentralized digital payment scheme}
+
+Bitcoin is a very first digital currency (TODO LINK) that gained
+gigantic popularity. Among all other solutions, it holds more than
+62\% of total market capitalization accordingly to
+\url{https://coinmarketcap.com/} as for 28.04.2017. The blockchain
+technology for handling the common state and probabilistic
+proof-of-work consensus fabric that bitcoin took was the perfect
+combination for it to become widely adopted. There are plenty of
+others solutions in cryptocurrency area, some of them being altcoins
+(bitcoin forks), some using different algorithms (and providing
+different features), but more or less adopting the same general
+decisions bitcoin did.
+
+\subsection{Blockchain}
+
+Blockchain is a very simple solution for building consensus algorithms
+that are open (any user can join), entirely decentralized and having
+an excellent scalability , compared to classic BFT state machine
+replication (\url{http://www.vukolic.com/iNetSec_2015.pdf}). This tradeoff
+also has another side -- blockchain consensus has much more limited
+throughput and performance.
+
+\subsection{Transactions and utxo}
+
+Proof-of-work vs proof-of-stake vs proof-of-X.  It’s crucial to
+describe it here because it’s not covered in ouroboros section.
+
+\section{Ouroboros}
+
+Ouroboros is a first proved proof-of-stake cryptocurrency protocol
+presented in \url{https://iohk.io/research/papers/#9BKRHCSI}. Its
+choice over other cryptocurrency/basecoin protocols is based several
+killer features. First of all, the proof-of-stake approach guarantees
+security against more types of attacks PoW solutions are vulnerable to
+(TODO selfish mining, bribery attacks). The general deficiency, of PoW
+solutions in terms of power consumption make PoS stand out with a huge
+advantage. Other non-pow approaches (TODO name:
+proof-of-retrievability, proof-of-storage etc) do not provide that
+elaborate research about system properties. The last feature that
+timecoin is going to actively incorporate and use is slotting
+mechanism of ouroboros -- the time between blocks issuing is more or
+less fixed and is based on a set of protocol constants, so we won’t
+need to deal with any problems arising from abmiguity of block time
+creation. For example, the block issuing rate in bitcoin is based on
+amount of people participating in mining and on general mining
+complexity which is variable that changes over time (one can check
+\url{https://blockchain.info/blocks} to verify that time period between
+blocks is 1 to 30+ minutes).
+
+\subsection{General protocol model}
+
+This subchapter will describe the basic protocol version.
+
+\subsubsection{Timing and security parameters}
+
+The protocol fixes the following public-known constants that define
+timing: $startTime, slotTau, k, epochK$. Start time is a timestamp,
+$epochTau$ stands for an amount of seconds the single slot lasts. $k$ is
+a security constant that defines certain number of blocks, it’s
+differently used in proving different part of the algorithm. $epochK$
+is a multiple of $k$ that defines the epoch range. $epochK = 10$ is
+used in production. $epochSlots$ will be used next as an alias for
+$epochK \times k$.
+
+Slot is a deterministic function from current time and system start
+time that’s monotonically increasing (over time). The length of slot
+is chosen to be more that world network latency, so any nontrivial
+message can be propagated across the network within the single slot
+interval.
+
+Security parameter k is defining network persistence
+property. Transaction is considered stable if its position in the
+ledger is more than k blocks deep. In production mode $k=60$ is
+chosen.
+
+\subsubsection{Ledger properties}
+
+The ledger of the ouroboros protocol is built in the familiar manner
+-- it contains chained blocks, where every next one contains hash of
+the previous one, some meta payload (like merkle root, signatures,
+etc), body (transactions most importantly). Unlike in bitcoin, there
+are two types blocks in ouroboros -- main blocks and genesis
+blocks. Slotting function divides all time in slots and every
+$epochSlots$ slots form an epoch. Every slot can have a related main
+block. Between two blocks from different epochs there must exist a
+genesis block.
+
+Main blocks are carrying main transaction/ledger functionality as it
+was already said. They have header and body. Body carries transaction
+set, SSC payload and other relatively heavy information. Header
+contains the following fields:
+
+\begin{enumerate}
+\item Body proof: datatype holding hashes of merkle tree roots over body
+fields.
+
+\item Consensus data: current epoch and slot, block difficulty (which is
+difficulty of previous block plus one), slot leader/block issuer
+public key and block signature (block header hash signed with slot
+leader public key).
+
+\end{enumerate}
+
+Genesis block captures the notion of slot leaders. Slot leader is a
+stakeholder (user that owns stake from the standpoint of
+cryptocurrency ledger) that is uniquely allowed to issue the block in
+the dedicated slot. Every epoch the algorithm called (unofficially)
+“shared seed calculation” is taking place. Its main purpose is to
+collect enough randomness from epoch actions, generate a random seed
+and define new slot leaders list (for every slot of the next
+epoch). This slot leader list is forming genesis block content,
+together with a little of metainfo -- epoch (without slot) and chain
+difficulty are also stored inside.
+
+\subsubsection{Shared Seed Computation}
+
+The multi-party computation (MPC) is used in ouroboros to retrieve a
+uniformly random string to proceed with leaders selection
+process. Commitments scheme is used to implement it and it goes as
+follows. The epoch is divided in three phases: the commitment phase,
+the reveal phase and the recovery phase.
+
+Commitment phase lasts first $2k$ slots of the epoch. Commitment is a
+function $Com(r,m)$ from randomness r and message m, such that there
+is a paired function $Open(r,m)$ and any party can verify that for the
+same random and message opened value is identical to committed (which
+hides the value itself). In this first phase parties are generating
+random strings u and share them to the network. Commitments eventually
+get into main blocks.
+
+Reveal phase lasts $4k$ slots after commitment phase which also lasts
+for $2k$ slots. On this step participants post their openings. After
+this stage is over, opened commitments are random strings that we can
+use to generate a secret. In reality SSC also uses so-called VSS
+(verified secret sharing) scheme that prevents protocol from failing
+if some portion of data was lost.
+
+Recovery phase lasts last $2k$ slots and it uses VSS to place restored
+chunks of data in case some commitments were not opened successfully
+and we don’t have enough randomness. For further explanation see the
+original paper.
+
+\subsection{Input endorsers and incentive structure}
+
+Incentive structure is a set of rules that incentivize participants of
+the network to take part in protocol execution by paying them for it.
+
+First, an extra set of stakeholders are assigned to each slot, which
+are called endorsers. Number of endorsers is fixed and may be more
+than one. Endorser are chosen using SSC scheme in the same manner as
+slot leaders are. The main point of endorsers is to collect
+transactions from network. They may or may not filter them using
+chosen heuristics -- take more of those who have more fees for
+example. Before slot leader creates a new block, endorsers propagate
+signed batch of transactions into network. Slot leader then merges all
+these transactions into single batch while preserving endorsers’
+proofs. Every main block contains information about correspondence
+between transaction and endorser who propagated it into the
+blockchain.
+
+Second, the transaction fee and paying mechanism is introduced. Each
+transaction’s difference between outputs and inputs stays for
+transaction fee. All fees from all the transactions in the epoch $e$
+are summed up to the value $S$. The protocol suggests even
+distribution of $S$ among all slot leaders and endorsers independently
+of whether they were or were not participating in the epoch
+activities. Later in the epoch $e+1$ stakeholder $U$ that have a right
+to be payed can issue a special transaction claiming $m * S / n$,
+where $n$ is total number of slot leaders and endorsers in the epoch
+$e$ and $m$ is number of times $U$ was participating as slot leader or
+endorser.
+
+Ouroboros paper proves that this strategy defines an approximate Nash
+equilibrium, meaning that participants deviating from the protocol can
+get at most $1 + \epsilon$ reward compared to the participants following
+the protocol.
+
+\section{Common features and protocol improvements}
+
+Bitcoin as it is now supports a big amount of extra protocol layers
+defined by BIPs -- bitcoin improvement proposals. This subchapter
+describes some of them, crucial for timecoin.
+
+\subsection{Scripting}
+
+Scripting framework is a cryptocurrency improvement that allows users
+to create addresses with flexible and tunable conditions for
+withdrawing money from it. It goes as follows. First, protocol defines
+a scripting language. It may be turing-complete (as Plutus, used in
+ouroboros) or not (forth-like, in bitcoin). Second, user creates a
+validating script that, given some specific set of arguments, returns
+boolean value. This validating script can be hashed and turned into
+valid public address. Any other user can send funds to this
+address. Third, when user wants to redeem funds from this script
+public key, he issues a transaction spending its money and includes
+script witness for the related input. Script witness is a pair of
+scripts -- verifying script, hash of which should match address tx is
+spending money from, and redeeming script. Redeeming script generates
+arguments for the validating script. Node that processes transaction
+launches redeeming script binded with verifying script (so that first
+passes argument to the second) and decides that this input can be
+spent iff this returns True.
+
+Ouroboros implementation (cardano-sl) uses scripting language Plutus
+that’s described in
+(\url{https://github.com/input-output-hk/plutus-prototype/blob/master/docs/spec/Formal\%20Specification\%20of\%20the\%20Plutus\%20Language\%20-\%20McAdams.pdf}). It’s
+a functional turing-complete strictly typed language similar to
+haskell. Plutus validating script has function \lstinline|validator :: A -> Comp B|,
+where \lstinline|Comp| is a built-in datatype akin to
+\lstinline|Maybe|. It has two constructors -- \lstinline|success :: B -> Comp B|
+and \lstinline|failure :: Comp B|. Plutus redeeming script
+has type Comp A. Launching them together is then just redeemer >>=
+validator. Notice that though validator return value may contain value
+inside, it’s not used by node when validating transaction inputs --
+the only thing that is checked is that result is not failure.
+
+Here’s an example of trivial validator and redeemer.
+
+\begin{lstlisting}[float=!h,caption={Пример исходного кода на Java}]
+data Foo = { Foo | Bar }
+
+validator : Foo -> Comp Unit {
+    validator x = case x of {
+        Foo  -> success Unit ;
+        Bar  -> failure } }
+
+redeemer : Comp Int {
+    redeemer = success Foo }
+\end{lstlisting}
+
+Plutus has a prelude library that provides basic datatypes and helpers
+needed: wrappers like Either or Maybe, Lists, different convenient
+predicates etc. It also has a number of builtins to retrieve
+information about particular transaction processed. So when writing a
+validator you can, for example, retrieve a set of all outputs and fail
+if you detect an output you don’t want to send money to. The framework
+is flexible enough to cover all transaction validation needs.
+
+\section{Colored coins}
+
+Colored coins is an improvement of a cryptocurrency to represent
+different kinds of assets. It adds coins of other type to single coin
+type supported by the base currency. Colored coins approach was
+initially standardized and implemented by EPOBC
+(\url{https://github.com/chromaway/ngcccbase/wiki/EPOBC_simple}) in
+2012, currently there are multiple more implementations: Open Assets
+standart
+(\url{https://github.com/OpenAssets/open-assets-protocol/blob/master/specification.mediawiki}),
+CoinSpark and Colu. Wallets supporting multiple standards are
+possible. It’s worth mentioning that all of listed standards are
+making use of bitcoin transactions’ metadata instead of forking and
+changing protocol. When having a freedom to plan before launch and
+fork, it’s much easier to embed colored coins into the product.
+
+There are different issues arising with the colored coins
+integration. First of all, transaction validation is different -- now
+every coin has a tag attached to it, so transaction validity depends
+on tx validity narrowed to every color. Second issue is coloring and
+assets issuing. While many cryptocurrencies supporting only one coin
+type usually stick to some initial stake distribution (plus, maybe,
+generating extra coins over it as it’s implemented in bitcoin, see
+mining award), the problem arises again when having many
+colors. Approach taken in Open Assets, for example, is creating
+issuing private key and allowing its owner only to issue more assets
+of this type. Instead of issuing more, we can, allow coins to
+automatically change tag if some rules apply. It is possible to
+declare “grey color” for coins and agree that any grey coin can become
+any other color coin. This approach was taken in RSCoin. EPOBC is
+using something pretty similar too, allowing transfer from basecoins
+to colored coins at one-to-one rate.
+
+\section{Hierarchical deterministic wallets}
+
+The extension to bitcoin protocol was standardized in BIP-32
+(\url{https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki})
+and it suggests the improvement of secp256k1 signature scheme that
+solves problems of different secret keys location on different
+machines and allows user to derive multiple accounts from a single
+seed.
+
+Given a key pair $Pk$ and $Sk$ (using secp256k1 standard), it enriches
+both with 32 bytes of entropy which is called chain code, resulting in
+new $Pke = (Pk, c)$ and $Ske = (Sk, c)$ of 64 bytes each. Then two
+following important functions are introduced:
+\begin{enumerate}
+\item $CKDpriv : (Ske, i) -> Ske$. It takes an extended private key,
+  integer $i$ in range $[0..2^{32})$ and returns a new extended secret
+  key.
+\item $CKDpub : (Pke, i) -> Maybe Pke$. If $i >= 2^{31}$ it returns
+  Nothing. This extension is called hardening, forbidding to derive
+  half of children public keys. Otherwise it returns an extended
+  public key $Pke$.
+\end{enumerate}
+
+The cryptography underneath derives hardened and unhardened keys in
+the way that for every extended pair $<Ske,Pke>$ and for every $i <
+2^{31}$, $CKDpriv(Ske,i)$ is a private key for $CKDpub(Pke,i)$. There is
+no possibility to derive keys in any other way (parent from child,
+secret child from public parent).
+
+The standard is implemented in CSL/Ouroboros and is default -- besides
+that, Cardano SL supports plain secp256k1 keys and scripts.
+
+\chapter{Описание алгоритма}
+
+\section{Colored coins integration}
+
+Given that forking and changing Ouroboros protocol itself is
+necessary, introducing colored coins becomes more or less
+trivial. This chapter will describe possible caveats related to this
+change.
+
+First modification is changing coin datatype. We will add a color tag
+of type $Int32$ to every coin. Coins of tag $0$ will be considered the
+standard coins. Binary representation of a coin can omit the tag, then
+it’s assumed processed coin has tag 0. We’ll call coins of type $0$
+basec to avoid confusion later. Two more specific types of coins are
+introduced -- ratec and tauc. Ratec are coins that represent user’s
+rating in the timecoin system, while tauc represent time. The fourth
+group of coins are action coins $actc_i$. It’s suggested to choose a
+range of colors enough to cover all possible activities in the single
+contract. We can assume for simplicity that action coins take the
+whole left tag space.
+
+Unlike giving users ability to emit colored coins on their own, we
+present color conversion rules.  All coins are converted at one-to-one
+rate. It is supposed that cost of minimal coin unit user can possess
+is negligible, like it is in bitcoin: bitcoin unit satoshi costs about
+0.00001 USD. Let $G$ be the graph of coin conversions, where vertices
+represent coin types and oriented edges stay for conversion
+directions. Our graph has the following form: $TG = <{basec, ratec,
+  tauc} \cup {actc_i}_i, {basec -> ratec, basec -> tauc} \cup {tauc ->
+  actc_i}_i \cup {actc_i -> tau}_i>$. Thus, there are two one-way
+conversion rules and one two-sided for every $<tauc, actc_i>$ pair.
+
+The transaction color validation rule should decide whether or not a
+set of inputs can be converted into set of outputs. It’s easy to see
+that while some coloring graphs make tx validation rule linear in
+amount of colors (imagine graph with edges ${A -> B, C -> D, E ->F,
+  …}$), some seem more complex.
+
+TODO How to resolve this in general case? Maybe we should forbid
+$actc_i -> tau$ conversion? It’ll be simple then.
+
+Regarding the Ouroboros protocol stability, it is suggested to support
+only basec in every algorithm implementation part (SSC/leaders
+calculation, thresholds, etc). It’s clear to see that this
+modification does not affect any security guarantees proven, since:
+There is no way to convert any coins of non-basec type back to basec.
+Basec convertation to other types is considered as basec loss in
+system, but CSL implementation allows user to send money to arbitrary
+public keys (that might not have known private key) and even destroy
+them (by sending transactions with input some more than output sum),
+unless the incentive mechanism is implemented. If incentive mechanism
+is implemented, one more remark should be made: users should include
+some basec fee into every transaction containing only coins of other
+type if they want it to get into the chain. Coins delta between
+outputs and inputs for non-colored coins is not taking part in
+incentive structure and is considered destroyed.
+
+\section{Contract system}
+
+Contract is an attempt to view the complex way of interaction as a set
+of needs, responsibilities, rules and possible ratings. Main target
+here is try to describe a many-to-many people relationship in a way
+it’s possible, given a set of actions, to determine whether all
+agreements were fulfilled, to which extent, and assign a metrics to
+users which hopefully correlates with their commitment and somehow
+motivates to be a better relationship participant.
+
+\subsection{Responsibilities and needs}
+
+This part tries to formalize the relationships between people in the
+closed group. Every group contract can be described, to some extent,
+as a set of responsibilities and duties. Roughly speaking,
+responsibility is described by:
+
+\begin{enumerate}
+
+\item Activity type (e.g. pair programming, philosophy talks,
+  housework)
+
+\item Timeframe: how frequently should it be done, how long should it
+  be in total. There are kinds of activities that can’t fit into this
+  categories because of their ad-hoc nature -- resolving unpredictable
+  conflicts etc. We assume every responsibility has a timeframe.
+
+\item Need scope/receivers: who needs this activity to happen and can
+  we define the need itself. It’s obvious that activity of type
+  "philosophy talk" involves a receiving person and person who
+  delivers it. In fact both of them are receivers and suppliers. But
+  some types don’t have a clearly defined receiver -- e.g. student in
+  a classic family should devote at least $40$ hours per week to
+  study, but nobody except him is involved it this. Same for housework
+  -- nobody receives the need directly, but there is
+  executor/supplier.
+
+\item Suppliers: those who are directly responsible for the liability
+  fulfillment. Important notice: it’s common (and thus important to
+  support) the responsibility in which suppliers are not specified
+  directly. Imagine that child needs one of parents to do maths with
+  him, but both are capable of that.
+
+\end{enumerate}
+
+Given the following verbal explanation, we’ll formulate the responsibility as:
+
+\begin{align*}
+&Andterm a = a | Andterm a \& Andterm a \\
+&Term a = Andterm a | (Term a) \vee (Term a) \\
+&Suppliers = Term UserId\\
+&Receiver = UserId\\
+&Timeframe = (Hours, Maybe Times)\\
+&Responsibility = (Suppliers, Maybe Receiver, ActivityType, Timeframe)
+\end{align*}
+
+Remark: contract responsibilities can be viewed as a directed graph
+from some point of view. Notice that suppliers term is basically
+disjunctive normal form. We put an even more restrictive rule: no two
+disjunctive clauses can contain exactly same elements (TODO: maybe
+something more?). But if we limit the scope only to contracts where
+Suppliers term has no “or” operator inside (top level $Term =
+AndTerm$), we can implement the following transformation. First,
+create a vertex for every user. For every Responsibility of type
+$S_1\&S_2\&…\&S_n \rightarrow Just Receiver$ view it as the following
+list: [Si, Receiver], which can be represented as set of arrows. Each
+arrow is responsibility to deliver some type of good, put ActivityType
+and TimeFrame as metainfo on the arrow. Responsibilities of type
+$S_1\&S_2\&...\&S_m \rightarrow Nothing$ can be viewed as list of
+identity arrows $[1_Si]$.
+
+This entails idea of effective responsibility encoding. If $G$ is a
+common oriented graph, then build $F$ by leaving all vertices as they
+are and creating the edge uv only in case there is both $uv$ and $vu$
+edges in $G$ that have the same timeframe. Cliques in $F$ are mutual
+responsibilities and can be encoded effectively taking linear space on
+number of participants (contrary to straight-forward factorial).
+
+\subsection{Contract as script}
+
+All information we need to simplate a contract can be packed into the
+script.
+
+The scheme is used as following. First, users obtain certain amount of
+basec coins from seller. This coin type is distributed freely as money
+equivalent -- it’s supposed you can buy it from other users in
+network, it’s held by people that support the network (run clients)
+and it’s proportional to the whole network support effort
+(electricity, hdd space, etc). Then users initiate their contract by
+creating the certain declaration datatype (config) that contains
+metainfo about it Money is sent to contract public address (hash of
+this config datatype).
+
+Except for the config (hardcoded into validator), contract has an
+internal mutable state. For instance, we should store the last time
+contract was triggered. We can hardcode all mutable variables into
+contract and just re-create it every time mutable state is changed,
+but it’s expensive (in terms of blockchain) and makes things more
+complex (hard to track single contract transactions over several
+contract periods). Instead it’s suggested to use the following
+solution. First, we’ll hardcode $eiStart$ into contract that would
+represent the epoch contract starts at. User doesn’t have any
+incentive to put irrelevant value inside -- too old values would
+prevent contract from retriggering, values far into future make
+contract unusable as well. Then we’ll create a function inside
+contract that retrieves the last renewal transaction epoch or
+$eiStart$ if there are no renewal transactions yet. Let’s bind this
+value to $eiLast$. When renewing, validator will retrieve transactions
+from $[eiLast...eiLast+contractPeriod]$ range using primitive
+$getLastEi$ that will be added to the scripting language (that will
+use node’s resources). Introducing primitives approach can be taken
+when getting transactions for the certain period. It is suggested to
+add extra $searchTxs$ primitive that will retrieve “related”
+transactions from node’s blockchain given the certain predicate (in
+our case: lying in the time range, related to the contract).
+
+So when contract period is over, it should be “renewed” -- we need to
+calculate users ratings and switch contract to the next epoch. This
+renewal is triggered user side by collecting related tx data (note
+that clients still don’t need to hold the whole blockchain but only
+related transactions), running the script and sending its
+validator/redeemer parts along with transaction to the
+network. Redeemer script is simple: it contains only signatures in
+fact. Transaction itself contains script address as input (coins of
+type basec), selected block owner from the last $k$ blocks that will
+receive paying money and user ratings (ratec type). validator should
+check that transaction input fee corresponds to the contract constant
+period fee, that inputs/outputs match and that ratings are assigned
+accordingly to action transactions executed in the last period (and
+strategy of rating assignment). We are also introducing changes to
+coin coloring and validation. It’s allowed to automatically “color” or
+“exchange” paying coins to rating coins using fixed rate that is the
+current protocol constant (ouroroboros update system/constants). It’s
+also forbidden to do it in any other than contract renewal transaction
+so people can’t easily produce action coins (more on this later…
+TODO).
+
+Rating assignment policy What we want to do is to agree on some rating
+value (which is special coin type/color) that will represent person’s
+commitment to the contract and so is proportional to the effort. It is
+suggested to scale it to $[0,contractPeriod]$ where period is expressed
+in number of slots, so amount of rating coins for the single contract
+renewal correlates with the contract time.
+
+Assignment policy requirements are:
+
+\begin{enumerate}
+
+\item If person doesn’t take part in any contract-related activity,
+  his rating for the contract period is zero.
+
+\item For completely fullfilled group responsibility (term contains
+  “and” links only) user (supplier) gets $1$.
+
+\item For non-fullfilled group responsibility all suppliers have their
+  rating decreased.
+
+\item For non-group responsibility (or-cases) every user that enters
+  at least one disjunctive case, splits responsibility with others,
+  evenly.
+
+\end{enumerate}
+
+Now what’s left is to define how exactly this formulas are operated. For every responsibility define:
+
+\begin{align*}
+hoursLoss &= 1 - min(\frac{spentHours}{totalHours}, 1) \\
+timesLoss &= if totalTimes = Nothing \\
+          &  then hoursToss \\
+          &  else 1 - min(\frac{spentTime}{totalTimes}, 1) \\
+totalLoss &= \frac{hoursLoss + totalLoss}{2}
+\end{align*}
+
+The total loss is amount of percent that’s lost to contribute to this
+responsibility. Split it among users using requirements above (every
+user either gets full loss or $\frac{1}{len(users)}$ of it). Then for every
+contract multiply it on contract’s timeframe, sum everything up and
+scale it to amount of minutes (hours? Days? roughly…) in the
+contract. We’ll get a loss for every user.
+
+The functionality that calculates the ratings based on
+responsibilities, transactions and other contract parameters is called
+RateAssign.
+
+$$
+RateAssign = undefined -- TODO
+$$
+
+\section{Proof of activity transaction}
+
+This section will describe how to build time tracking transaction or
+proof of activity.
+
+Transaction represents an act of single activity type spend by a set
+of users simultaneously. Let $Users = \{U_i\}_{i=1..N}$ stay for the
+set of users taking part in the activity and $Spent_i = <tauS_i,
+\Delta_i>$ for the time spent by user $U_i$ -- tuple of start time
+(global time) and duration in seconds. $ActivityType(k)$ = $actc_k$ is
+a coin type representing some activity. Then we define
+pre-transaction: $TxActionPre = <Users, \{Spent_i\}_{i=1..N},
+ActivityType(k)>$. This real-world model satisfies the requirements we
+have in respect to contract -- it captures the basic notice of users
+group, activity type and time intervals. Though as real basecoin
+transactions appear in blocks that have a dedicated timeframe
+themselves (because issued in the fixed slot), we don’t need to put a
+timestamps into it. Moreover, this representation adds more complexity
+due to the fact we still need to derive how much time each pair of
+users spent together, as $Spent_i$ intervals don’t have to be equal
+for every user.
+
+To build a real proof of activity transaction $TxAction$ we will need
+to transform the $TxActionPre$ into the set of spending inputs and
+outputs. Let $UPk_i$ stay for the public key of user participating in
+the contract, which is embedded into the contract. We define a mapping
+function $CActOut(C, {Uij}) : Pk$, that given a contract and a
+non-empty subset of users participating in this contract, returns a
+public key of an action spending address. $CActOut$ is injective and
+has a finite range of size $2^n = \sum{\binom{n}{i}}$ for the chosen
+contract. We use $CActOut$ to associate the contract with the
+temporary action balances that will be used later by the contract
+script to collect tracking information. Let $ESet = \{Ev_i\}_{i=1..k}$
+be the set populated by every interval start or end event from
+$TxActionPre$ $Spent_i$ set. Form the interval set $ISet =
+\{IEv_i\}_{i=1..k-1}$ from the events set. It’s easy to see that in
+every interval from this set there is a particular set of users
+active. Then for every user $U_i$ and his $Spend_i$ we divide the
+$Delta_i$ into chunks accordingly to the $ESet$. We form the
+compliance set $Compl_i$ from $Delta_{i,j}$ by first transforming
+every user set that acts in the $Delta_{i,j}$ to the correspondent
+address $CActP_k$ (using $CActOut$) and then merging the
+$\{<Delta_{i,j}, CActP_{k,j}>\}$ that have the same public key,
+summing up the deltas -- so we don’t have duplicate outputs. Then we
+transform every $Delta_{i,s}$ into $DTau_{i,k}$ by converting the
+time interval to minutes. We end up with $Compl_i$ containing
+$\{<DTau_{i,s}, CActP_{k,s}>\}$ -- the set of time intervals $U_i$
+spends on every group of users he interacted with through the
+$TxActionPre$, with time intervals corresponding to interaction
+length.
+
+This procedure is done for every user. ${Compl_i}$ can be then
+transformed into the real transaction. Each user defines
+$\sum(DTau_{i,s})$ $tauc$ as input and sets his outputs to
+$\{CActP_{k,s}\}$ with $DTau_{i,s}$ correlating with amount of color
+coins of color $actc_i$ for some $i$ chosen before. This user chunks
+can be trivially merged into the single transaction. So in the end the
+transaction $TxAction$ contains the inputs $<UPk_i, UTau_i, tauc>$ and
+outputs $<CActP_k, actc_j>$.
+
+The transaction validity is obvious by construction, as the coins
+spent by every user are matching the sum property (inputs are defined
+as sum of outputs) and tx conforms to coloring rules -- it transforms
+$tauc$ into $actc_j$. The way of transforming $TxActionPre$ to the
+$TxAction$ also satisfies the main property: we save all the crucial
+information about the commitments while removing UTC timestamps
+completely.
+
+\section{Action balances functionality}
+
+The $CActOut(C, U)$ function needs to derive a set of public keys from
+the contract and at the same time give private components of these
+keys to users. This is crucial because otherwise action coins sent to
+action balances can’t be reused and it leads to useless blockchain
+bloat. The solution to this problem is the following. We assign a HD
+wallet spec root private key $CSke$ to one of contract users, which we
+will call contract master. This private key must be
+unhardened. Contract master doesn’t share $CSke$ with anybody
+else. The public component $CPke$ of the root key is hardcoded into
+the contract as a separate field. Now we can instantiate the function
+$CActOut(C,U)$ as following:
+
+\begin{enumerate}
+
+\item Enumerate all choices of user subsets using using $userEnum : U
+  -> \frac{N}{2^n}$. The $userEnum$ function can be defined trivially. One
+  example is the following. Represent every user with a $i \in
+  \mathbb{N}$. Convert every set $U_i$ to the list of users converted to their
+  indices, sorted. Lexicographical order on these strings will define
+  the order on subsets.
+
+\item $CActOut(C,U_i) = CPke/userEnum(U)$. Recall that notation
+  $Pke/i$ defines the $i$th public key derived from $Pke$.
+\end{enumerate}
+
+\section{Contract renewal transaction and assets flow}
+
+The only way contract executes the rating assignment is via the
+renewal transaction. Renewal transaction consists of two parts:
+
+\begin{enumerate}
+\item The action coins $ActPeriod$ accumulated on $CActOut(C,U)$ for
+  every user subset $U$. These tx inputs should be from blocks that
+  are inside the last contract’s period. These coins are converted
+  back to timec and can be reused later.
+\item Renewal fee in basec. This gets converted to reward coins
+  mostly, which are distributed over contract reward addresses
+  ${CRewP_k}$. These are also used to pay the transaction fee.
+\end{enumerate}
+
+Renewal addresses are special public keys that can be derived from the
+contract and user’s public key. They don’t have the matching private
+key by design, so users rating coins can never be transferred back
+(and spoil the statistics). It is suggested to derive $CRewP_k$ as
+$Blake2b512(CPk || UPk_i)$, where $Blake2b512$ is a blake2b hashing
+function (\url{https://blake2.net/blake2.pdf}) with output of size
+$512$ bits, to match the HD wallets signing scheme.
+
+The renewal transaction can spend money from contract’s account only
+if it conforms to a rules of reward distribution, general transaction
+form, users output. All of this functionality is embedded into the
+validator script. More specific description will be presented later.
+
+Money flow and contract usage process is the following.
+
+\begin{enumerate}
+\item A group of users create a contract script, pasting the custom
+  values into the contract script template. Initial values also
+  include the $eiStart$ variable that is a slot representing contract
+  starting point.
+\item Any user initiates the contract by sending basec on the script
+  address. This allows later to make a renewal transaction.
+\item Users spend time tracking their activities in the contract
+  period interval.
+\item After the contract period is over, contract master uses his
+  client to calculate the rewards for the period thus forming the
+  renewal transaction. He also supplies the signatures for action
+  balances public keys (using his $CSke$) and empty redeeming script.
+\item User propagates the transaction over the network.
+\item Node check that transaction conforms to coloring and balances
+  rules first. Then it verifies all the $CActPk_i$ signatures from
+  user and launches the validator script.
+\item Validator script has an access to the blockchain and current
+  transaction. It retrieves the last epoch index where renewal
+  transaction took place (by searching transactions from its public
+  address using $getLastEi$ primitive) or sets this to hardcoded start
+  epoch. It runs the same procedure user did on the client part and
+  ensures that:
+  \begin{enumerate}
+  \item Renewal transaction matches an overall template: inputs are
+    action addresses and contract pk, outputs are rating addresses and
+    there is an address for transferring tauc back.
+  \item Action utxo spent by the transaction matches the one
+    calculated inside the script. Script calls the needed primitives
+    to get all utxo that was accumulated during the script period on
+    action addresses. This is trivial to integrate into the scripting
+    language standard library (prelude).
+  \item Reward is distributed correctly. Script runs the functionality
+    $RateAssign$ to determine rate outputs. Script fails if
+    transaction rate outputs don’t match expected ones.
+  \end{enumerate}
+\item Renewal transaction gets into the blockchain, users have their
+  new ratings on rate accounts. Once renewal transaction is in the
+  blockchain, users can continue from step (3). Transaction can be
+  rejected if contract doesn’t have enough basec to be renewed (then
+  someone should pay for the renewal) or if master forms incorrect
+  transaction.
+\end{enumerate}
+
+\section{Pre-tx formation layer}
+
+In order for users to create tracking transactions they must collect
+multiple signatures. The standard approach for this is to either share
+signatures in text or qr codes (electrum) or use a centralized
+transaction pool (coinkite). Network-based approaches can be
+abstracted to two separate classes by their functionality: transport
+and interface. Formation transport defines where and how raw
+information (unsigned transactions) is stored. Interface layer defines
+API to access this information. We start this part from API
+description, defining minimal amount of functionality needed to be
+supported. Next subsection will give overview on what solutions can be
+applied to implement the transport layer.
+
+\subsection{API layer and requirements}
+
+The main idea of pre-tx formation layer in general is to provide users
+a possibility to create a transaction in the “track in -- track out”
+fashion how it is done in org-mode. We will refer to the software user
+uses as “client” software, while the entity that remotely holds the
+common users data will be called a transport.
+
+It is also appropriate to divide API into two parts: pre-tx formation
+and signature collection.
+
+Pre-tx API should be able to do the following things:
+
+\begin{enumerate}
+\item $StartActivity(args) : txid$ call initiates the empty
+  pre-transaction. User who calls must attach his public key and sign
+  the request with this public key. User should also specify the
+  security scope: contract id or users that can take part in this
+  activity directly.
+\item $SearchActivity(args) : txid$ is a call that searches the
+  activity by participants (or txid directly) taking action in it. If
+  the corresponding pre-tx is ready, it returns the transformed. If
+  the data is not ready yet (not everybody clocked out), it returns
+  all the data currently known.
+\item $JoinActivity(txid) : Bool$ allows contract participant to add his
+  $startTime$ timestamp to the activity.
+\item $AnnounceExit(txid) : Maybe PreTx$ cuts the tracking interval
+  for the user for the given transaction id. If the user was last to
+  exit the activity, the call returns $Just PreTx$, $Nothing$ otherwise.
+\end{enumerate}
+
+The service also removes all the information that stays too long in
+the transport. Completed pre-transactions are removed $t1$ minutes
+after they are formed, maximum duration of pre-tx formation $t2$ is
+different and much more ($~12$ hours should be enough i suppose).
+
+Signature collection API is something yet to describe TODO. But in
+general it has $<commit, retrieve, sign>$ scheme.
+
+\subsection{Transport layer}
+
+WIP. Centralized service implementation is straight-forward because
+it’s under your control and it’s trusted. Just make a simple http
+server (servant + acid-state). Distributed service built on to of
+nodes is more tricky, because we need to protect from sybil
+attacks. Some ideas:
+
+\begin{enumerate}
+\item DHT based on CSL stake with a low threshold to prevent random
+  users come. Pretty good idea in fact.
+\item http://www.cypherpunks.ca/~iang/pubs/robustMessagePassing.pdf Or
+  something like that. Read BFT tolerant DHT.
+\end{enumerate}
+
+\chapterconclusion
+
+В конце каждой главы желательно делать выводы. Вывод по данной
+главе~--- ну чето написал, каеф.
+
+
+%% Макрос для заключения. Совместим со старым стилевиком.
+\startconclusionpage
+
+Алгоритм хороший и примеры интересные.
+
+\printmainbibliography
+
+
+
+
+\end{document}
