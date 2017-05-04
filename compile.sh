@@ -3,5 +3,5 @@
 set -e
 source ./common.sh
 cleanup
-compile bs-thesis
+compile thesis
 cleanup
