@@ -57,7 +57,7 @@
 \begin{document}
 
 \studygroup{M3438}
-\title{Пример оформления бакалаврской работы}
+\title{Тайм-трекинг пользовательских действий на распределенной блокчейн-сети}
 \author{Волхов Михаил Александрович}{Волхов М.А.}
 \supervisor{Штукенберг Дмитрий Григорьевич}{Штукенберг Д.Г.}{специалист}{тьютор кафедры КТ Университета ИТМО}
 \publishyear{2017}
@@ -76,18 +76,15 @@
 \technicalspec{Требуется разработать систему для тайм-трекинга пользовательских действий с помощью блокчейн-технологии. Алгоритм должен поддерживать многопользовательские действия. Должна быть разрабтана формализация социальных контрактов и система оценки пользовательских действий на основании данных тайм-трекинга. }
 
 %%% Содержание выпускной квалификационной работы (перечень подлежащих разработке вопросов)
-\plannedcontents{Пояснительная записка должна демонстрировать использование наиболее типичных конструкций, возникающих при составлении
-пояснительной записки (перечисления, рисунки, таблицы, листинги, псевдокод), при этом должна быть составлена так, что демонстрируется
-корректность работы стилевого файла. В частности, записка должна содержать не менее двух приложений (для демонстрации нумерации рисунков и таблиц
-по приложениям согласно ГОСТ) и не менее десяти элементов нумерованного перечисления первого уровня вложенности (для демонстрации корректности
-используемого при нумерации набора русских букв).}
+\plannedcontents{Пояснительная записка должна описывать алгоритм достаточно хорошо, чтобы всем понравилось и никто не жаловался. TODO}
 
 %%% Исходные материалы и пособия
-\plannedsources{\begin{enumerate}
-    \item ГОСТ~7.0.11-2011 <<Диссертация и автореферат диссертации>>;
-    \item С.М. Львовский. Набор и верстка в системе \LaTeX;
-    \item предыдущий комплект стилевых файлов, использовавшийся на кафедре компьютерных технологий.
-\end{enumerate}}
+\plannedsources{
+  \begin{enumerate}
+  \item Интернеты;
+  \item Моар интернетов;
+  \end{enumerate}
+}
 
 %%% Календарный план
 \addstage{Ознакомление с имеющимися решениями в сфере тайм-трекинга}{02.2017}
@@ -101,12 +98,10 @@
 
 %%% Задачи, решаемые в ВКР
 \researchtargets{\begin{enumerate}
-    \item соответствие титульной страницы, задания и аннотации шаблонам, принятым в настоящее время на
-    кафедре;
-    \item соответствие содержательной части пояснительной записки требованиям ГОСТ~7.0.11-2011 <<Диссертация и
-    автореферат диссертации>>;
-    \item относительное удобство в использовании~--- указание данных об авторе и научном руководителе один раз
-    и в одном месте, автоматический подсчет числа тех или иных источников.
+  \item Соответствие алгоритма требованиям архитектуры (блокчейн).
+  \item Гибкий интерфейс: возможность реализации мобильного клиента для использования с алгоритмом.
+  \item Формализация контрактной системы должна покрывать минимум повторяющиеся контракты с фиксированным временем в период.
+  \item Алгоритм должен быть спроектирован так, чтобы не нарушать гарантий безопасности базовой системы.
 \end{enumerate}}
 
 %%% Использование современных пакетов компьютерных программ и технологий
@@ -118,24 +113,13 @@ algorithmicx, algpseudocode, enumitem, setspace, biblatex (а именно biber
 totcount, longtable, listings, chngcntr, titlesec, titletoc, ifpdf.}
 
 %%% Краткая характеристика полученных результатов
-\researchsummary{Была разработана система Timecoin поверх криптовалюты Ouroboros, а также }
+\researchsummary{Была разработана система Timecoin поверх криптовалюты Ouroboros, TODO}
 
 %%% Гранты, полученные при выполнении работы
-\researchfunding{Автор разрабатывал этот стилевик исключительно за свой счет и на
-добровольных началах. Однако значительная его часть была бы невозможна, если бы
-автор не написал в свое время кандидатскую диссертацию в \LaTeX,
-а также не отвечал за формирование кучи научно-технических отчетов по гранту,
-известному как <<5-в-100>>, что происходило при государственной финансовой поддержке
-ведущих университетов Российской Федерации (субсидия 074-U01).}
+\researchfunding{Грантов при выполнении работы получено не было.}
 
 %%% Наличие публикаций и выступлений на конференциях по теме выпускной работы
-\researchpublications{По теме этой работы я (к счастью!) ничего не публиковал.
-\begin{refsection}
-Однако покажу, как можно ссылаться на свои публикации из списка литературы:
-\nocite{example-english, example-russian}
-\printannobibliography
-\end{refsection}
-}
+\researchpublications{Тема работы не была упомянута в выступлениях и конференциях в каком-либо виде.}
 
 %% Эта команда генерирует титульный лист и аннотацию.
 \maketitle{Бакалавр}
@@ -146,52 +130,58 @@ totcount, longtable, listings, chngcntr, titlesec, titletoc, ifpdf.}
 %% Макрос для введения. Совместим со старым стилевиком.
 \startprefacepage
 
-This paper addresses the problem of collective time tracking in
-relation to contracts and their fulfillment, presenting Timecoin --
-the protocol built over Ouroboros cryptocurrency. It allows creating
-and supporting contracts with obligations, tracking activities and
-measuring user’s effort together with having an ability to reliably
-share and prove this information.
+Решения, основанные на блокчейне, показывают возможность создания
+распределенной сети, решающей конкретную проблему, одновременно не
+требуя доверия к конкретным узлам сети и поддерживая стабильность
+протокола. Блокчейн был применен в разных
+сферах проектирования ПО. Особенно популярными стали решения в области
+криптовалют, основанные на блокчейне, такие как <LINK ссылка на
+биткоин>, <LINK ссылка на ouroboros>. Также существуют системы для
+распределенного хранения данных (<LINK ссылка на storj>), голосования
+(LINK followmyvote, bitshares, bitcongress). Область применения широка
+и не ограничивается приведенными примерами. Блокчейн -- это простое и
+устойчивое решение для создания распределенной сети с большим
+количеством узлов, что является ограничением BFT (byzantine fault
+tolerant -- устойчивым к проблеме византийских генералов) алгоритмов
+достижения консенсуса (LINK ссылка). Блокчейн-решения хорошо
+масштабируются горизонтально и предоставляют базу для алгоритмов,
+имеющих гарантии безопасности относительно различных атак.
 
-Different blockchain-based solutions showed that it is possible to
-maintain a network solving a particular problems without compromising
-user trust. Blockchain approach was taken in different areas of
-computer science giving the rise to cryptocurrencies (SOURCE),
-improving distributed storages solutions (SOURCE), voting systems
-(SOURCE), etc. It suggests a simple and reliable way to build up a
-network with huge amount of nodes (which is a severe limitation of
-BFT-based distributed protocols) allowing great horizontal scalability
-and security guarantees against adversary agents.
+Программное обеспечение для организации рабочего процесса и
+тайм-трекинга на первый взгляд полностью ортогонально продуктам,
+основанным на блокчейне. Все рассматриваемые решения можно условно
+поделить на две категории: органайзеры (LINK google calendar, remember
+the milk) и тайм-трекеры (LINK arbtt, toggl). Некоторые продукты
+совмещают в себе обе функциональности: org-mode, youtrack. Органайзеры
+оперируют в терминах задач. Задачам можно присвоить различные
+временнЫе атрибуты, вроде запланированного времени, чтобы не
+пропустить важную встречу. Тайм-трекеры позволяют эффективно снимать
+статистику о том, как пользователь тратит свое время. Анализ собранной
+статистики может помочь найти проблемные места в организации
+жизнедеятельности (например, выявлять и устранять прокрастинацию).
 
-Organisational and time-tracking tools are a completely orthogonal
-software branch. Solutions like org-mode allow users to effectively
-maintain a set of tasks and notes. It provides features like task
-planning, scheduling and agenda views so you never miss an important
-meeting. More interestingly, org-mode has time-tracking support,
-giving user possibility to map his set of tasks on the timeline. This
-gives birth to even more effective life and habits analysis,
-procrastination detection and so on. Though there are more complex
-tasks that one might want to be solved. For example, user may want
-automatically assign himself a certain rating over the period that
-correlates with his productivity. Multi-person time tracking is a
-time-tracking utility feature that allows several parties mark that
-they were doing the certain action together (collective activity). As
-for my knowledge, there are no tools that support this feature
-yet. This idea can be expanded to multi-person contracts. If there is
-enough knowledge about people agreements, rating calculation plus we
-have time-tracking capability of the system, the whole contract
-evaluation process can be automated.
+Однако, автору не известно ни одно решение, поддерживающее
+мультипользовательский тайм-трекинг. Под этим термином подразумевается
+возможность хранения не только информации о том, что группа
+пользователей совместно участвовала в какой-то деятельности, но и
+подтверждение этой информации от каждого участика. Эта идея
+продолжается на мультипользовательские контракты. Если сервис имеет
+достаточно знаний о том, какие группы пользователей должны тратить
+время совместно на установленные задачи и в каком объеме, то оценка
+таких соглашений может быть автоматизирована, если известны данные о
+тайм-трекинге.
 
-People change contracts and may want to preserve the history. There is
-a pretty strong evidence that if you’re able to conform to your own
-obligations over time, people can rely on you. Sharing this
-information in a reliable way is where blockchain comes
-in. Distributed coin-like time tracker also solves the problem of a
-single trust entity and about general tracking collaboration (which is
-non-trivial for org-mode, for example, due to high complexity of
-merging conflicts SOURCE?). Timecoin is a solution addressing this
-particular problem, hopefully providing a basic framework to operate.
-
+Блокчейн и криптовалюты предлагают мгновенное решение. Во-первых, идея
+мультипользовательского тайм-трекинга близка к идее
+мультипользовательских транзакций. Во-вторых, большинство криптовалют
+реализуют в том или ином виде фреймворк для скриптинга, который
+позволяет выполнять произвольные вычисления с данными на блокчейне,
+что может быть эффективно использовано для распределения очков
+рейтинга в рамках контракта. В-третьих, высокий рейтинг пользователей
+свидетельствует о их компетентности в вопросе
+договоренностей. Блокчейн представляет эффективный способ хранения
+псевдо-публичной информации и дает возможности гибко настроить
+механизм публикации таких данных.
 
 %% Начало содержательной части.
 \chapter{Обзор предметной области}
