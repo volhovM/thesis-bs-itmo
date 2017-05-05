@@ -23,6 +23,7 @@
 % (2) http://vukolic.com/iNetSec_2015.pdf
 % (3) https://iohk.io/research/papers/#9BKRHCSI
 % (4) http://cs.umd.edu/~amiller/permacoin.pdf
+% (5) https://github.com/input-output-hk/plutus-prototype/blob/master/docs/spec/Formal%20Specification%20of%20the%20Plutus%20Language%20-%20McAdams.pdf
 
 \begin{filecontents}{bachelor-thesis.bib}
 @inproceedings{ example-english,
@@ -409,66 +410,75 @@ $e+1$.
 протокола, отклоняющийся от него, получает не более $1 + \epsilon$ той
 награды, которую он бы точно получил, придерживаясь протокола.
 
-\section{Common features and protocol improvements}
+\section{Улучшения и дополнительная функциональность}
 
-Bitcoin as it is now supports a big amount of extra protocol layers
-defined by BIPs -- bitcoin improvement proposals. This subchapter
-describes some of them, crucial for timecoin.
+Биткоин в текущей своей реализации поддерживает большое количество
+дополнительных уровней протокола, не упомянутых в оригинальной
+статье. Улучшения и модификации специфицируются в BIP (bitcoin
+improvement proposals). Эта секция описывает некоторые из них.
 
-\subsection{Scripting}
+\subsection{Скриптинг и P2SH}
 
-Scripting framework is a cryptocurrency improvement that allows users
-to create addresses with flexible and tunable conditions for
-withdrawing money from it. It goes as follows. First, protocol defines
-a scripting language. It may be turing-complete (as Plutus, used in
-ouroboros) or not (forth-like, in bitcoin). Second, user creates a
-validating script that, given some specific set of arguments, returns
-boolean value. This validating script can be hashed and turned into
-valid public address. Any other user can send funds to this
-address. Third, when user wants to redeem funds from this script
-public key, he issues a transaction spending its money and includes
-script witness for the related input. Script witness is a pair of
-scripts -- verifying script, hash of which should match address tx is
-spending money from, and redeeming script. Redeeming script generates
-arguments for the validating script. Node that processes transaction
-launches redeeming script binded with verifying script (so that first
-passes argument to the second) and decides that this input can be
-spent iff this returns True.
+Скриптинг или P2SH (pay-to-script-hash, дословно ``перевод на хэш
+скрипта'') -- модификация криптовалюты, позволяющая пользователям
+создавать адреса с гибкими, настраиваемыми условиями снятия денег. В
+биткоине стандартизирована под
+BIP16 \footnote{\url{https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki}}. Данная
+часть опишет более общую структуру.
 
-Ouroboros implementation (cardano-sl) uses scripting language Plutus
-that’s described in
-(\url{https://github.com/input-output-hk/plutus-prototype/blob/master/docs/spec/Formal\%20Specification\%20of\%20the\%20Plutus\%20Language\%20-\%20McAdams.pdf}). It’s
-a functional turing-complete strictly typed language similar to
-haskell. Plutus validating script has function \lstinline|validator :: A -> Comp B|,
-where \lstinline|Comp| is a built-in datatype akin to
-\lstinline|Maybe|. It has two constructors -- \lstinline|success :: B -> Comp B|
-and \lstinline|failure :: Comp B|. Plutus redeeming script
-has type Comp A. Launching them together is then just redeemer >>=
-validator. Notice that though validator return value may contain value
-inside, it’s not used by node when validating transaction inputs --
-the only thing that is checked is that result is not failure.
+Протокол криптовалюты определяет поддерживаемый скриптовый язык. Он
+может быть как тьюринг-полным (Plutus, [5]), так и неполным (биткоин
+использует стековый язык, похожий на Форт). Пользователь создает
+скрипт-валидатор, который принимает один аргумент произвольного типа и
+возвращает, условно, булевое значение. Валидатор может быть
+захеширован и использован как публичный адрес криптовалюты. Любой
+пользователь может перевести средства на этот адрес. Для того, чтобы
+перевести деньги с этого адреса, к доказательству транзакции должен
+быть приложена пара из двух скриптов. Один из них -- валидатор, хэш
+которого должен совпадать с адресом, с которого списываются
+средства. Второй -- ридимер, генерирует входные данные для
+валидатора. Чтобы проверить валидность траты средств, нужно
+сгенерировать аргументы ридимером, передать их валидатору и
+удостовериться, что последний вернул $true$.
 
-Here’s an example of trivial validator and redeemer.
+Основная реализация протокола Ouroboros (Cardano
+SL\footnote{https://github.com/input-output-hk/cardano-sl}) использует
+скриптовый язык Plutus Ouroboros implementation (cardano-sl) uses
+scripting language Plutus. Это функциональный тьюринг-полный язык со
+строгой типизацией, схожий с Haskell. Скрипт-валидатор в Plutus имеет
+типовую сигнатуру \lstinline|validator :: A -> Comp B|, где
+\lstinline|Comp| это встроенный дататайп, изоморфный $Maybe$ с
+точностью до инстанса класса монады. Он имеет два конструктора:
+\lstinline|success :: B -> Comp B| и \lstinline|failure :: Comp
+B|. Скрипт-ридимер в Plutus имеет тип \lstinline|Comp A|. Несложно
+видеть, что поскольку $Comp$ является монадой, то проверка возможности
+потратить инпут есть \lstinline|redeemer >>= validator|. Стоит
+отметить, что несмотря на то, что возвращаемое значение валидатора --
+это \lstinline|Comp a|, алгоритм валидации не проверяет значение
+внутри конструктора, а лишь удостоверяется, что значение не является
+\lstinline|failure|.
 
-\begin{lstlisting}[float=!h,caption={Пример исходного кода на Java}]
+Приведем пример тривиального валидатора и ридимера.
+
+\begin{lstlisting}[float=!h,caption={Пример пары валидатор/ридимер на Plutus}]
 data Foo = { Foo | Bar }
 
 validator : Foo -> Comp Unit {
     validator x = case x of {
-        Foo  -> success Unit ;
+        Foo  -> success MkUnit ;
         Bar  -> failure } }
 
 redeemer : Comp Int {
     redeemer = success Foo }
 \end{lstlisting}
 
-Plutus has a prelude library that provides basic datatypes and helpers
-needed: wrappers like Either or Maybe, Lists, different convenient
-predicates etc. It also has a number of builtins to retrieve
-information about particular transaction processed. So when writing a
-validator you can, for example, retrieve a set of all outputs and fail
-if you detect an output you don’t want to send money to. The framework
-is flexible enough to cover all transaction validation needs.
+Plutus имеет стандартную библиотеку, которая предоставляет базовые
+типы данных и функции: обертки $Either$ и $Maybe$, списки и различные
+придкаты. Также существует поддержка для добавления встроенных
+функций. Встроенные функции могут использовать ресурсы узла сети. С
+помощью них валидатор может, например, достать UTXO, относящееся к
+какому-то конкретному блоку или периоду блокчейна. Фреймворк
+достаточно гибок достаточно сложные операции валидации.
 
 \section{Colored coins}
 
