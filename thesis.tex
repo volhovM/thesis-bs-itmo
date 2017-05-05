@@ -191,7 +191,7 @@ remember the milk\footnote{Remember the milk: online to-do list and
 таких соглашений может быть автоматизирована, если известны данные о
 тайм-трекинге.
 
-Блокчейн и криптовалюты предлагают мгновенное решение. Во-первых, идея
+Блокчейн и криптовалюты предлагают прямое решение. Во-первых, идея
 мультипользовательского тайм-трекинга близка к идее
 мультипользовательских транзакций. Во-вторых, большинство криптовалют
 реализуют в том или ином виде фреймворк для скриптинга, который
@@ -449,8 +449,8 @@ scripting language Plutus. Это функциональный тьюринг-п
 типовую сигнатуру \lstinline|validator :: A -> Comp B|, где
 \lstinline|Comp| это встроенный дататайп, изоморфный $Maybe$ с
 точностью до инстанса класса монады. Он имеет два конструктора:
-\lstinline|success :: B -> Comp B| и \lstinline|failure :: Comp
-B|. Скрипт-ридимер в Plutus имеет тип \lstinline|Comp A|. Несложно
+\lstinline|success :: B -> Comp B| и \lstinline|failure :: Comp B|.
+Скрипт-ридимер в Plutus имеет тип \lstinline|Comp A|. Несложно
 видеть, что поскольку $Comp$ является монадой, то проверка возможности
 потратить инпут есть \lstinline|redeemer >>= validator|. Стоит
 отметить, что несмотря на то, что возвращаемое значение валидатора --
@@ -480,129 +480,148 @@ Plutus имеет стандартную библиотеку, которая п
 какому-то конкретному блоку или периоду блокчейна. Фреймворк
 достаточно гибок достаточно сложные операции валидации.
 
-\section{Colored coins}
+\section{Цветные монеты}
 
-Colored coins is an improvement of a cryptocurrency to represent
-different kinds of assets. It adds coins of other type to single coin
-type supported by the base currency. Colored coins approach was
-initially standardized and implemented by EPOBC
-(\url{https://github.com/chromaway/ngcccbase/wiki/EPOBC_simple}) in
-2012, currently there are multiple more implementations: Open Assets
-standart
-(\url{https://github.com/OpenAssets/open-assets-protocol/blob/master/specification.mediawiki}),
-CoinSpark and Colu. Wallets supporting multiple standards are
-possible. It’s worth mentioning that all of listed standards are
-making use of bitcoin transactions’ metadata instead of forking and
-changing protocol. When having a freedom to plan before launch and
-fork, it’s much easier to embed colored coins into the product.
+Цветные монеты (colored coins) это расширение криптовалюты,
+позволяющее поддерживать разные типы сбережений. К значению ресурса
+добавляется специальный тег, который наызвается цветом. Цветные
+моменты были изначально стандартизированы и реализованы как настройка
+над биткоином в стандарте
+EPOBC\footnote{\url{https://github.com/chromaway/ngcccbase/wiki/EPOBC_simple}}
+в 2012. В настоящий момент существуют еще несколько иных решений:
+стандарт OAP \footnote{Open Assets Protocol
+  \url{https://github.com/OpenAssets/open-assets-protocol/blob/master/specification.mediawiki}},
+Coinspark\footnote{\url{http://coinspark.org/}} и
+Colu\footnote{\url{https://www.colu.com/}}. Существуют виртуальные
+кошельки, поддерживающие несколько стандартов
+одновременно\footnote{ChromaWallet поддерживает OAP и OPOBC
+  \url{http://chromawallet.com/}}. Стоит отметить, что все
+перечисленные стандарты используют метаданные транзакций в биткоине
+для передачи информации о цвете, а не изменяют протокол напрямую (что
+привело бы к форку). Тем не менее, поддержка стандарта с изменением
+протокола может быть сделана проще и эффективнее.
 
-There are different issues arising with the colored coins
-integration. First of all, transaction validation is different -- now
-every coin has a tag attached to it, so transaction validity depends
-on tx validity narrowed to every color. Second issue is coloring and
-assets issuing. While many cryptocurrencies supporting only one coin
-type usually stick to some initial stake distribution (plus, maybe,
-generating extra coins over it as it’s implemented in bitcoin, see
-mining award), the problem arises again when having many
-colors. Approach taken in Open Assets, for example, is creating
-issuing private key and allowing its owner only to issue more assets
-of this type. Instead of issuing more, we can, allow coins to
-automatically change tag if some rules apply. It is possible to
-declare “grey color” for coins and agree that any grey coin can become
-any other color coin. This approach was taken in RSCoin. EPOBC is
-using something pretty similar too, allowing transfer from basecoins
-to colored coins at one-to-one rate.
+С интеграцией цветных монет связано несколько дополнительных
+задач. Во-первых, изменяется логика валидации транзакции. Если раньше
+достаточным условием было проверить, что сумма выходов не превосходит
+сумму входов, то с цветными монетами существует несколько
+подходов. Первый предлагает запрет на транзакции, ``красящие'' монеты
+-- то есть изменяющие цвет в транзакции. В этом случае валидация
+транзакции сводится к валидации сужений транзакций до каждого
+цвета. Этот подход реализован во всех упомянутых
+стандартах. Во-вторых, изменяется логика эмиссии ресурсов. OAP
+предоставляет возможность производить эмиссию активов, удостоверяя
+эмитента отдельным секретным ключом. Вместо возможности производить
+чистую эмиссию можно предложить решение с покраской монет --
+транзакция может менять тег средств, если она удовлетворяет правилам
+покраски. Этот подход был применен при имплементации цветных монет в
+RSCoin\footnote{Репозиторий RSCoin на github:
+  \url{https://github.com/input-output-hk/rscoin-haskell}}: монеты
+цвета $0$ могли быть покрашены в цвет $i \neq 0$ (единственное правило
+перекраски). EPOBC решает проблему похожим образом, разрешая перевод
+базовых монет (монет базовой криптовалюты) в любой другой цвет.
 
-\section{Hierarchical deterministic wallets}
+\section{Иерархический детерминированный кошелек}
 
-The extension to bitcoin protocol was standardized in BIP-32
-(\url{https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki})
-and it suggests the improvement of secp256k1 signature scheme that
-solves problems of different secret keys location on different
-machines and allows user to derive multiple accounts from a single
-seed.
+Дополнение к протоколу биткоина под названием HD кошелек (Hierarchical
+Deterministic Wallets) было предложено в рамках
+BIP32\footnote{\url{https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki}}
+и предлагает расширение схемы подписей
+secp256k\footnote{\url{http://www.secg.org/sec2-v2.pdf}}, решающее
+проблему дублирования секретных ключей на разных устройствах.
 
-Given a key pair $Pk$ and $Sk$ (using secp256k1 standard), it enriches
-both with 32 bytes of entropy which is called chain code, resulting in
-new $Pke = (Pk, c)$ and $Ske = (Sk, c)$ of 64 bytes each. Then two
-following important functions are introduced:
+Пара ключей $Pk$ и $Sk$ (стандарт secp256k1) расширяются 32 байтами
+энтропии $c$, которая называется кодом цепи (chain code), результируя
+в пару расширенных ключей $Pke = (Pk, c)$ и $Ske = (Sk, c)$ по 64 байт
+каждый. Затем вводятся две ключевые функции:
+
 \begin{enumerate}
-\item $CKDpriv : (Ske, i) -> Ske$. It takes an extended private key,
-  integer $i$ in range $[0..2^{32})$ and returns a new extended secret
-  key.
-\item $CKDpub : (Pke, i) -> Maybe Pke$. If $i >= 2^{31}$ it returns
-  Nothing. This extension is called hardening, forbidding to derive
-  half of children public keys. Otherwise it returns an extended
-  public key $Pke$.
+\item $CKDpriv : (Ske, i) \rightarrow Ske$. Принимает на вход расширенный
+  секретный ключ $Ske$, целое число $i$ в интервале $[0..2^{32})$ и
+  возвращает расширенный секретный ключ.
+\item $CKDpub : (Pke, i) \rightarrow Maybe Pke$. Если $i \geq 2^{31}$, функция
+  возвращает $Nothing$. Это расширение называется харденингом
+  (hardening), запрещая выводить половину интервала публичных дочерних
+  ключей. Если $i < 2^{31}$, возвращает расширенный публичный ключ.
 \end{enumerate}
 
-The cryptography underneath derives hardened and unhardened keys in
-the way that for every extended pair $<Ske,Pke>$ and for every $i <
-2^{31}$, $CKDpriv(Ske,i)$ is a private key for $CKDpub(Pke,i)$. There is
-no possibility to derive keys in any other way (parent from child,
-secret child from public parent).
+Функции $CKDpriv$ и $CKDpub$ построены таким образом, что каждая
+расширенная пара $\langle Ske,Pke \rangle$, полученная с их помощью для
+одного $i$, является валидной парой секретный-публичный
+ключ. Возможность выводить ключи в любом другом направлении
+(родительские из дочерних, секретные из публичных) отсутствует.
 
-The standard is implemented in CSL/Ouroboros and is default -- besides
-that, Cardano SL supports plain secp256k1 keys and scripts.
+Стандарт реализован в Cardano SL/Ouroboros и является основным. Кроме
+этого, Cardano SL поддерживает обычные ключи secp256k1 и
+скрипт-адреса.
 
 \chapter{Описание алгоритма}
 
-\section{Colored coins integration}
+\section{Интеграция цветных монет}
 
-Given that forking and changing Ouroboros protocol itself is
-necessary, introducing colored coins becomes more or less
-trivial. This chapter will describe possible caveats related to this
-change.
+Поскольку данная работа предлагает изменение протокола Ouroboros без
+поддержки обратной совместимости, поддержка цветных монет существенно
+упрощается, поскольку не требует надстраивания (например, через
+метаданные транзакции). Эта секция описывает различные нюансы и детали
+реализации.
 
-First modification is changing coin datatype. We will add a color tag
-of type $Int32$ to every coin. Coins of tag $0$ will be considered the
-standard coins. Binary representation of a coin can omit the tag, then
-it’s assumed processed coin has tag 0. We’ll call coins of type $0$
-basec to avoid confusion later. Two more specific types of coins are
-introduced -- ratec and tauc. Ratec are coins that represent user’s
-rating in the timecoin system, while tauc represent time. The fourth
-group of coins are action coins $actc_i$. It’s suggested to choose a
-range of colors enough to cover all possible activities in the single
-contract. We can assume for simplicity that action coins take the
-whole left tag space.
+Первая необходимая модификация это изменение структуры данных
+монеты. Добавим тег цвета типа $Int32$ к каждой монете. Монеты цвета
+$basec$ считаются базовыми монетами. Тег в бинарном (сериализованное)
+представлении монеты может опущен, в этом случае предполагается, что
+тег равен $basec$. Также добавим два других типа монет -- $ratec$ и
+$\tau c$. $Ratec$ монеты будут использоваться для представления
+пользовательского рейтинга в системе, а $\tau c$ будут представлять
+очки времени. Четвертая группа монет -- это монеты действия
+$actc_i$. Размер этого множество можно, для простоты, взять
+дополнением всего пространства цветов за вычетом упомянутых ранее, то
+есть $N_a = 2^{32}-3$. ОБозначим множество $actc = \{actc_i\}_{i=1..N_a}$.
 
-Unlike giving users ability to emit colored coins on their own, we
-present color conversion rules.  All coins are converted at one-to-one
-rate. It is supposed that cost of minimal coin unit user can possess
-is negligible, like it is in bitcoin: bitcoin unit satoshi costs about
-0.00001 USD. Let $G$ be the graph of coin conversions, where vertices
-represent coin types and oriented edges stay for conversion
-directions. Our graph has the following form: $TG = <{basec, ratec,
-  tauc} \cup {actc_i}_i, {basec -> ratec, basec -> tauc} \cup {tauc ->
-  actc_i}_i \cup {actc_i -> tau}_i>$. Thus, there are two one-way
-conversion rules and one two-sided for every $<tauc, actc_i>$ pair.
+Воспользуемся схемой покраски монет, не прибегая к возможности эмиссии
+активов нового цвета. Все монеты конвертируются один к
+одному. Предполагается, что реальная стоимость одной монеты
+пренебрежима (единица монеты в биткоине сатоши стоит 0.00001
+USD). Построим ориентированный граф конвертации цветов монет $G$, где
+вершины представляют собой типы монет, а ребро $uv$ принадлежит графу,
+если возможна конвертация монеты типа $u$ в тип $v$. Используемый граф
+конвертации будет иметь следующую форму:
+\begin{align*}
+  TG = \langle &\{basec, ratec, \tau c\} \cup actc,\\
+  &\{basec \rightarrow ratec
+  , basec \rightarrow \tau c\} \cup
+  \{\tau c \rightarrow actc_i\}_{i=1..N_a} \cup
+  \{actc_i \rightarrow \tau c\}_{i=1..N_a}\rangle
+\end{align*}
 
-The transaction color validation rule should decide whether or not a
-set of inputs can be converted into set of outputs. It’s easy to see
-that while some coloring graphs make tx validation rule linear in
-amount of colors (imagine graph with edges ${A -> B, C -> D, E ->F,
-  …}$), some seem more complex.
+Таким образом, он включает в себя два односторонних правила
+преобразования и одно двухстороннее для каждой пары $\langle \tau c,
+actc_i\rangle$.
 
-TODO How to resolve this in general case? Maybe we should forbid
-$actc_i -> tau$ conversion? It’ll be simple then.
+Правило валидации транзакции должно определить, может ли выделенный
+сет входов быть покрашен в цвета выхода в соответствии с $G$. Легко
+заметить, что некоторые формы графов позволяют проводить линейную по
+числу входов и выходов валидацию: представим граф $\{A \rightarrow B,
+C \rightarrow D, E \rightarrow F, \cdots\}$ -- его валидация сводится
+к валидации сужений транзакции на пары цветов.
 
-Regarding the Ouroboros protocol stability, it is suggested to support
-only basec in every algorithm implementation part (SSC/leaders
-calculation, thresholds, etc). It’s clear to see that this
-modification does not affect any security guarantees proven, since:
-There is no way to convert any coins of non-basec type back to basec.
-Basec convertation to other types is considered as basec loss in
-system, but CSL implementation allows user to send money to arbitrary
-public keys (that might not have known private key) and even destroy
-them (by sending transactions with input some more than output sum),
-unless the incentive mechanism is implemented. If incentive mechanism
-is implemented, one more remark should be made: users should include
-some basec fee into every transaction containing only coins of other
-type if they want it to get into the chain. Coins delta between
-outputs and inputs for non-colored coins is not taking part in
-incentive structure and is considered destroyed.
+TODO тут должен быть алгоритм валидации транзакции на абстрактном графе.
 
-\section{Contract system}
+Что касается гарантий стабильности протокола Ouroboros, предлагается
+поддерживать только $basec$ во всех частях алгоритма, связанных с
+размером сбережений (SSC/выбор лидеров, делегация и различные пороги,
+система поощрений). Легко видеть, что эта модификация не затрагивает
+гарантий базового протокола:
+\begin{enumerate}
+\item Не существует возможности получить $basec$ монеты из любого
+  другого цвета
+\item Общая потеря $basec$ монет при конвертации не меняет поведения,
+  потому что базовая реализация позволяет уничтожать монеты, выставляя
+  ненулевую разницу между входами и выходами транзакции. Также, не
+  запрещено отправлять средства на адреса с неизвестным секретным
+  ключом, что эквивалентно уничтожению средств.
+\end{enumerate}
+
+\section{Система контрактов}
 
 Contract is an attempt to view the complex way of interaction as a set
 of needs, responsibilities, rules and possible ratings. Main target
