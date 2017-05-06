@@ -623,83 +623,78 @@ TODO тут должен быть алгоритм валидации транз
 
 \section{Система контрактов}
 
-Contract is an attempt to view the complex way of interaction as a set
-of needs, responsibilities, rules and possible ratings. Main target
-here is try to describe a many-to-many people relationship in a way
-it’s possible, given a set of actions, to determine whether all
-agreements were fulfilled, to which extent, and assign a metrics to
-users which hopefully correlates with their commitment and somehow
-motivates to be a better relationship participant.
+Контракт -- формализация способа взаимодействия пользователей как
+множества обязательств, нужд и правил, а также соответствия этим
+обязательствам в виде рейтинга. Главная цель этой секции состоит в
+описании обязательств таким образом, чтобы, имея данные о том, какие
+относящиеся к контракту действия были выполнены (и в какой мере),
+пользователям можно было бы проставить соответствующий рейтинг. Этот
+рейтинг должен коррелировать с усилиями пользователей в отношении
+правил контракта и мотивировать участников выполнять свои
+обязательства.
 
-\subsection{Responsibilities and needs}
+\subsection{Ответственности и нужды}
 
-This part tries to formalize the relationships between people in the
-closed group. Every group contract can be described, to some extent,
-as a set of responsibilities and duties. Roughly speaking,
-responsibility is described by:
+Представим условие контракта в виде набора обязанностей. Обязанность в
+общем виде описывается следующими параметрами:
 
 \begin{enumerate}
-
-\item Activity type (e.g. pair programming, philosophy talks,
-  housework)
-
-\item Timeframe: how frequently should it be done, how long should it
-  be in total. There are kinds of activities that can’t fit into this
-  categories because of their ad-hoc nature -- resolving unpredictable
-  conflicts etc. We assume every responsibility has a timeframe.
-
-\item Need scope/receivers: who needs this activity to happen and can
-  we define the need itself. It’s obvious that activity of type
-  "philosophy talk" involves a receiving person and person who
-  delivers it. In fact both of them are receivers and suppliers. But
-  some types don’t have a clearly defined receiver -- e.g. student in
-  a classic family should devote at least $40$ hours per week to
-  study, but nobody except him is involved it this. Same for housework
-  -- nobody receives the need directly, but there is
-  executor/supplier.
-
-\item Suppliers: those who are directly responsible for the liability
-  fulfillment. Important notice: it’s common (and thus important to
-  support) the responsibility in which suppliers are not specified
-  directly. Imagine that child needs one of parents to do maths with
-  him, but both are capable of that.
-
+\item Тип деятельности: любая активность, имеющая начало и
+  конец. Например, парное программирование или какой-либо вид спорта.
+\item Временное ограничение: как часто и как долго деятельность должна
+  иметь место. Некоторые типы деятельностей очевидным образом не
+  входят в это описание из-за их случайной природы (например, условная
+  деятельность ``прогулка в парке, если не идет дождь''). Тем не
+  менее, ограничение по времени покрывает большую долю необходимых
+  ситуаций.
+\item Получатель: тот, кто определяет необходимость в совместном
+  времяпровождении. Получатель -- пользователь, вместе с которым эта
+  активность должна происходить. Групповые деятельности, в которых
+  получателем является каждый участник, описываются множеством
+  обязанностей (по одной на удовлетворения потребностей каждого). Для
+  активностей без явного получателя это поле может быть
+  опущено. Пример: ученик должен тратить минимум 30 часов еженедельно
+  на домашние задания, тем не менее это требование родителей.
+\item Поставщики: пользователи, ответственные за то, чтобы
+  обязательство было выполнено. В случае невыполнения требований,
+  теряют свой рейтинг. Описываются в дизъюнктивной нормальной форме
+  без отрицания -- такое представление одновременно предоставляет
+  необходимую гибкость и значительно упрощает валидацию при подсчете
+  рейтинга.
 \end{enumerate}
 
-Given the following verbal explanation, we’ll formulate the responsibility as:
+Формальное описание обязанности (TODO сделать красивее):
 
 \begin{align*}
-&Andterm a = a | Andterm a \& Andterm a \\
-&Term a = Andterm a | (Term a) \vee (Term a) \\
-&Suppliers = Term UserId\\
-&Receiver = UserId\\
-&Timeframe = (Hours, Maybe Times)\\
-&Responsibility = (Suppliers, Maybe Receiver, ActivityType, Timeframe)
+Maybe \ a &= Just \ a \ | \ Nothing \\
+Andterm \ a &= a \ | \ (Andterm \ a) \wedge (Andterm \ a) \\
+Term \ a &= Andterm \ a \ | \ (Term \ a) \vee (Term \ a) \\
+Suppliers &= Term \ UserId\\
+Receiver &= UserId\\
+Timeframe &= \langle Hours, Maybe \ Times \rangle\\
+Responsibility &= \langle Suppliers, Maybe \ Receiver, ActivityType, Timeframe \rangle
 \end{align*}
 
-Remark: contract responsibilities can be viewed as a directed graph
-from some point of view. Notice that suppliers term is basically
-disjunctive normal form. We put an even more restrictive rule: no two
-disjunctive clauses can contain exactly same elements (TODO: maybe
-something more?). But if we limit the scope only to contracts where
-Suppliers term has no “or” operator inside (top level $Term =
-AndTerm$), we can implement the following transformation. First,
-create a vertex for every user. For every Responsibility of type
-$S_1\&S_2\&…\&S_n \rightarrow Just Receiver$ view it as the following
-list: [Si, Receiver], which can be represented as set of arrows. Each
-arrow is responsibility to deliver some type of good, put ActivityType
-and TimeFrame as metainfo on the arrow. Responsibilities of type
-$S_1\&S_2\&...\&S_m \rightarrow Nothing$ can be viewed as list of
-identity arrows $[1_Si]$.
+Частым случаем является набор ответственностей, имеющих одно множество
+``поставищики и получатель''. Пусть дано множество обязанностей
+$R_1$. Рассмотрим $R_2 \subset R_1$, такое что для каждой обязанности
+$r \in R_2$ если $r$ имеет форму $S_1\&S_2\&…\&S_n \rightarrow Receiver$. Построим ориентированный граф $G$, создав по вершине на
+каждого пользователя, являющегося поставщиком или получателем в хотя
+бы одной $r \in R_2$ и по ребру на $\forall r \in R_2 \langle S_i,
+Receiver \rangle$ . Преобразуем $G$ в $F$: оставим вершины, но добавим
+$uv$ в $F$ только если $uv \in G \wedge vu \in G$. Заметим, что если в
+$R_2$ был набор пользователей $U = \{U_i\}_{i=1..N}$ и набор
+обязанностей $\{U \setminus U_i \rightarrow U_i\}_{i=1..M}$ с
+одним и тем же временным ограничением и типом активности, то $F$
+содержит клику на множестве ребер $U$. Эти рассуждения могут быть
+применены для эффективного кодирования (сериализации) набора
+обязанностей.
 
-This entails idea of effective responsibility encoding. If $G$ is a
-common oriented graph, then build $F$ by leaving all vertices as they
-are and creating the edge uv only in case there is both $uv$ and $vu$
-edges in $G$ that have the same timeframe. Cliques in $F$ are mutual
-responsibilities and can be encoded effectively taking linear space on
-number of participants (contrary to straight-forward factorial).
+Такое описание обязанности является достаточно широким, чтобы
+покрывать большинство необходимых ситуаций и в то же время простым,
+что позволяет автоматизировать процесс выставления рейтинга.
 
-\subsection{Contract as script}
+\subsection{Скрипт контракта}
 
 All information we need to simplate a contract can be packed into the
 script.
