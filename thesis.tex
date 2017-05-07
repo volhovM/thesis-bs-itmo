@@ -903,78 +903,76 @@ $Users_1$. Поделим штраф поровну между этими кат
 не учитывает реальное отношение усилий, приложенными участниками для
 удовлетворения обязанности.
 
-\section{Contract renewal transaction and assets flow}
+\section{Транзакция продления и поток активов}
 
-The only way contract executes the rating assignment is via the
-renewal transaction. Renewal transaction consists of two parts:
+Единственный способ, с помощью которого с контракта можно переводить
+средства, есть транзакция продления контракта. Она состоит из двух частей:
 
 \begin{enumerate}
-\item The action coins $ActPeriod$ accumulated on $CActOut(C,U)$ for
-  every user subset $U$. These tx inputs should be from blocks that
-  are inside the last contract’s period. These coins are converted
-  back to timec and can be reused later.
-\item Renewal fee in basec. This gets converted to reward coins
-  mostly, which are distributed over contract reward addresses
-  ${CRewP_k}$. These are also used to pay the transaction fee.
+\item Весь объем монет типа $actc$, которые участвую в трекинговых
+  транзакция, накапливаются на адресах $CActOut(C,Users_i)$. Эти
+  средства могут быть переиспользованы, поэтому они являются входами
+  транзакции. Соответствующий выход может иметь любой адрес и тип
+  выходных средств $\tau c$. Предполагается, что мастер контракта
+  переводит эти средства себе, либо другим участникам для дальнейшего
+  оборота.
+\item Плата за продление в $basec$. Эти монеты переходят на
+  спциализиованные рейтинговые адреса ${CRewPk_i}_{i=1..N}$. Также, эта часть
+  транзакции должна быть использована для оплаты самой транзакции.
 \end{enumerate}
 
-Renewal addresses are special public keys that can be derived from the
-contract and user’s public key. They don’t have the matching private
-key by design, so users rating coins can never be transferred back
-(and spoil the statistics). It is suggested to derive $CRewP_k$ as
-$Blake2b512(CPk || UPk_i)$, where $Blake2b512$ is a blake2b hashing
-function (\url{https://blake2.net/blake2.pdf}) with output of size
-$512$ bits, to match the HD wallets signing scheme.
+Рейтинговые адреса формируются из публичных ключей, которые выводятся
+из контракта и публичного ключа пользователя. Они не имеют
+соответствующих секретных ключей намеренно, что гарантирует
+невозможность снять $ratec$ со счета и скрыть статистику. В качестве
+реализации можно взять $CRewPk_i = Blake2b512(CPk || UPk_i)$, где
+$Blake2b512$ это хэш-функция из семейства
+blake2\footnote{\url{https://blake2.net/blake2.pdf}} с размером
+хэш-пространства $2^{512}$ (чтобы совпадать со схемой расширенных HD
+ключей).
 
-The renewal transaction can spend money from contract’s account only
-if it conforms to a rules of reward distribution, general transaction
-form, users output. All of this functionality is embedded into the
-validator script. More specific description will be presented later.
-
-Money flow and contract usage process is the following.
+Опишем полную схему потока активов.
 
 \begin{enumerate}
-\item A group of users create a contract script, pasting the custom
-  values into the contract script template. Initial values also
-  include the $eiStart$ variable that is a slot representing contract
-  starting point.
-\item Any user initiates the contract by sending basec on the script
-  address. This allows later to make a renewal transaction.
-\item Users spend time tracking their activities in the contract
-  period interval.
-\item After the contract period is over, contract master uses his
-  client to calculate the rewards for the period thus forming the
-  renewal transaction. He also supplies the signatures for action
-  balances public keys (using his $CSke$) and empty redeeming script.
-\item User propagates the transaction over the network.
-\item Node check that transaction conforms to coloring and balances
-  rules first. Then it verifies all the $CActPk_i$ signatures from
-  user and launches the validator script.
-\item Validator script has an access to the blockchain and current
-  transaction. It retrieves the last epoch index where renewal
-  transaction took place (by searching transactions from its public
-  address using $getLastEi$ primitive) or sets this to hardcoded start
-  epoch. It runs the same procedure user did on the client part and
-  ensures that:
+\item Группа пользователей создает скрипт, добавляя в темплейтные поля
+  конфигурационные параметры. Один пользователь назначается мастером:
+  он генерирует $CSke$ и добавляет $CPke$ в конфигурацию. Любой
+  участник переводит $basec$ монеты на счет $CPk$, чтобы инициировать
+  контракт.
+\item Первым периодом контракта является $[cStart \cdots
+  cStart+cPeriod]$. Пользователи самостоятельно меняют $basec$ на
+  $\tau c$ (или получают $\tau c$ любым другим способом) и отмечают
+  свои действия в рамках периода контракта с помощью транзакций
+  активности.
+\item Начиная со слота $cStart + cPeriod + 1$ мастер может продлить
+  контракт. Он создает транзакцию продления, собирая информацию о
+  действиях за последний период, выставляет соответствующую плату за
+  транзакцию, добавляет подписи для $CActOut$ ключей (с помощью
+  $CSke$) и отправляет транзакцию в сеть.
+\item Узел сети, проверяющий транзакцию, произведет проверку балансов
+  и расчет платы транзакции. За этим следуют проверки валидности всех
+  потраченных входов транзакции. $CActOut$ входы будут проверены с
+  помощью приложенных мастером подписей, затем узел запустит валидатор
+  (с пустым ридимером).
+\item Валидатор имеет доступ к блочейну и текущей обрабатываемой
+  транзакции. Он производит следующие проверки:
   \begin{enumerate}
-  \item Renewal transaction matches an overall template: inputs are
-    action addresses and contract pk, outputs are rating addresses and
-    there is an address for transferring tauc back.
-  \item Action utxo spent by the transaction matches the one
-    calculated inside the script. Script calls the needed primitives
-    to get all utxo that was accumulated during the script period on
-    action addresses. This is trivial to integrate into the scripting
-    language standard library (prelude).
-  \item Reward is distributed correctly. Script runs the functionality
-    $RateAssign$ to determine rate outputs. Script fails if
-    transaction rate outputs don’t match expected ones.
+  \item Выводит последний период (с помощью $siLast$ и $cPeriod$) и
+    проверяет, что текущий период больше правой границы интервала.
+  \item Транзакция продления подходит под общий темплейт: два типа
+    входов ($CPk$ и $CActOut_i$), два типа выходов ($CRewPk_i$ адреса,
+    типа выхода $ratec$; $\tau c$ тип выхода на всем остальном).
+  \item Входы соответствующие адресам активностей, в точности
+    совпадают со всем множеством входов, использованных в последний
+    период. Валидатор имеет возможность производить поиск по
+    транзакциям (с помощью реализованного узлом примитива), поэтому
+    проверка сводится к сопоставлению множеств.
+  \item Распределение наград на выходе транзакций соответствует
+    подсчитанному валидатором (с помощью $RateAssign$).
   \end{enumerate}
-\item Renewal transaction gets into the blockchain, users have their
-  new ratings on rate accounts. Once renewal transaction is in the
-  blockchain, users can continue from step (3). Transaction can be
-  rejected if contract doesn’t have enough basec to be renewed (then
-  someone should pay for the renewal) or if master forms incorrect
-  transaction.
+\item Транзакция продления попадает в блокчейн, распределяя очки
+  рейтинга. Транзакция продления начинает новый период. Пользователи
+  могут продолжить сценарий со второгу пункта.
 \end{enumerate}
 
 \section{Pre-tx formation layer}
