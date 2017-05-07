@@ -844,56 +844,64 @@ ActivityType\rangle$. Мнемонически, участник разбива�
 
 \section{Функция распределения рейтинга}
 
-What we want to do is to agree on some rating
-value (which is special coin type/color) that will represent person’s
-commitment to the contract and so is proportional to the effort. It is
-suggested to scale it to $[0,cPeriod]$ where period is expressed in
-number of slots, so amount of rating coins for the single contract
-renewal correlates with the contract time.
+Функция распределения рейтинга
+$RateAssign(\{Responsibility_i\},{ActionTx_i}) : Rating$ -- функция от
+контракта и данных транзакций, возвращающая рейтинг. Рейтинг является
+вещественным числом, определяющим соответствие действий пользователя
+его обязанностям. Область значений $RateAssign$ предлагается принять
+равной $[0,cPeriod]$ по нескольким причинам. Во-первых, $cPeriod$ в
+любой установке дает хороший баланс между реальной стоимостью монет
+$ratec$ (низкая) и точностью приближения вещественного числа
+натуральным (предполагая, что длительность слота не превышающет пяти
+минут). Во-вторых, $cPeriod$ пропорционален временнОй длительности
+контракта и наглядно характеризует кумулятивный рейтинг пользователя.
 
-Assignment policy requirements are:
+Определим свойства функции распределения рейтинга $RateAssign$
+(требуют большего формализма):
 
 \begin{enumerate}
 
-\item If person doesn’t take part in any contract-related activity,
-  his rating for the contract period is zero.
+\item Заполнение: если для каждой обязанности $R$, в которой $U_i$
+  выступает поставщиком, в период контракта верно, что $R$ была
+  полностью выполнена, $U_i$ получает максимальный рейтинг.
 
-\item For completely fullfilled group responsibility (term contains
-  “and” links only) user (supplier) gets $1$.
+\item Аксиома болвана: пользователю, не принимающему участие ни в
+  одной активности (при этом имеющему ненулевые обязательства),
+  присваивается нулевой рейтинг.
 
-\item For non-fullfilled group responsibility all suppliers have their
-  rating decreased.
-
-\item For non-group responsibility (or-cases) every user that enters
-  at least one disjunctive case, splits responsibility with others,
-  evenly.
-
+\item Участие пользователя в обязанности, которая не была выполнена
+  полностью, влечет снижение его рейтинга. Вхождение пользователя в
+  несколько $\vee$-кейсов не снижает его рейтинг больше, чем если бы
+  он входил только в один.
 \end{enumerate}
 
-Now what’s left is to define how exactly this formulas are operated. For every responsibility define:
+Представим общую структуру алгоритма $RateAssign$. Для каждой
+обзанности с ненулевым получателем $U_{rec}$ определим:
 
 \begin{align*}
-hoursLoss &= 1 - min(\frac{spentHours}{totalHours}, 1) \\
-timesLoss &= if totalTimes = Nothing \\
-          &  then hoursToss \\
-          &  else 1 - min(\frac{spentTime}{totalTimes}, 1) \\
-totalLoss &= \frac{hoursLoss + totalLoss}{2}
+hoursLoss &= 1 - \min(\frac{spentMinutes}{totalMinutes}, 1)
+\\
+timesLoss &=
+\begin{cases}
+          hoursLoss, & \text{if } totalTimes \text{ is Nothing} \\
+          1 - \min(\frac{spentTimes}{totalTimes}, 1), & \text{otherwise}
+\end{cases}
+\\
+totalLoss &= \frac{hoursLoss + timesLoss}{2}
 \end{align*}
 
-The total loss is amount of percent that’s lost to contribute to this
-responsibility. Split it among users using requirements above (every
-user either gets full loss or $\frac{1}{len(users)}$ of it). Then for every
-contract multiply it on contract’s timeframe, sum everything up and
-scale it to amount of minutes (hours? Days? roughly…) in the
-contract. We’ll get a loss for every user.
+Значение $totalLoss$ представляет собой взвешенную долю
+неудовлетворенности обязательства. Далее необходимо разделить ее между
+пользователями. Для начала выделим всех участников контракта, которые
+входят в каждый дизъюнкт $Users_0$. Объединим остальных в множество
+$Users_1$. Поделим штраф поровну между этими категориями, присвоив
+потерю рейтинга каждому из $Users_0$ и поделим штраф на $Users_1$
+поровну между ее участниками.  Усредним потерю рейтинга по всем
+обязанностям и домножим на $cPeriod$.
 
-The functionality that calculates the ratings based on
-responsibilities, transactions and other contract parameters is called
-RateAssign.
-
-$$
-RateAssign = undefined -- TODO
-$$
+Отметим, что предложенная реализация $RateAssign$ достаточно наивна и
+не учитывает реальное отношение усилий, приложенными участниками для
+удовлетворения обязанности.
 
 \section{Contract renewal transaction and assets flow}
 
