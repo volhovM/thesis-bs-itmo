@@ -696,68 +696,159 @@ $R_2$ был набор пользователей $U = \{U_i\}_{i=1..N}$ и н�
 
 \subsection{Скрипт контракта}
 
-All information we need to simplate a contract can be packed into the
-script.
+Эта секция описывает схему интеграции контракта в скрипт
+криптовалюты. Скрипт-адрес представляет из себя аккаунт, который
+поддерживает единственную операцию снятия с себя средств --
+продление. Продление контракта представляет собой транзакцию, которая
+распределяет рейтинг по выделенным дополнительным адресам,
+ассоциированным с этим скриптом. Чтобы инициировать контракт,
+необходимо создать скрипт и перевести $basec$ монеты на его счет.
 
-The scheme is used as following. First, users obtain certain amount of
-basec coins from seller. This coin type is distributed freely as money
-equivalent -- it’s supposed you can buy it from other users in
-network, it’s held by people that support the network (run clients)
-and it’s proportional to the whole network support effort
-(electricity, hdd space, etc). Then users initiate their contract by
-creating the certain declaration datatype (config) that contains
-metainfo about it Money is sent to contract public address (hash of
-this config datatype).
+Сам код скрипта делится на две части -- встроенный код и
+конфигурацию. Конфигурация -- это темплейтные поля, которые
+заполняются пользователем. Она содержит в себе следующие параметры:
 
-Except for the config (hardcoded into validator), contract has an
-internal mutable state. For instance, we should store the last time
-contract was triggered. We can hardcode all mutable variables into
-contract and just re-create it every time mutable state is changed,
-but it’s expensive (in terms of blockchain) and makes things more
-complex (hard to track single contract transactions over several
-contract periods). Instead it’s suggested to use the following
-solution. First, we’ll hardcode $eiStart$ into contract that would
-represent the epoch contract starts at. User doesn’t have any
-incentive to put irrelevant value inside -- too old values would
-prevent contract from retriggering, values far into future make
-contract unusable as well. Then we’ll create a function inside
-contract that retrieves the last renewal transaction epoch or
-$eiStart$ if there are no renewal transactions yet. Let’s bind this
-value to $eiLast$. When renewing, validator will retrieve transactions
-from $[eiLast...eiLast+contractPeriod]$ range using primitive
-$getLastEi$ that will be added to the scripting language (that will
-use node’s resources). Introducing primitives approach can be taken
-when getting transactions for the certain period. It is suggested to
-add extra $searchTxs$ primitive that will retrieve “related”
-transactions from node’s blockchain given the certain predicate (in
-our case: lying in the time range, related to the contract).
+\begin{enumerate}
+\item Период контракта $cPeriod$. Поскольку Ouroboros имеет встроенную
+  поддержку слоттинга с фиксированной длиной слота, то пользователь
+  может указать период в слотах, а скрипт может оперировать этим
+  понятием с хорошей точностью (доставать все транзакции за выделенный
+  период времени).
+\item Метка старта контракта $cStart$. Для того, чтобы контракт мог
+  выделить последний период, ему необходимо знать слот, в котором
+  появилась последняя транзакция продления (это можно сделать с
+  помощью встроенных в скриптовый язык функций). Но до первого
+  продления эта информация не существует. Метка старта представляет из
+  себя индекс слота и используется ровно в этом случае.
+\item Список публичных ключей участников контракта $cUsers$.
+\item Набор обязательств $cResponsibilites$, индексированный ключами
+  из $cUsers$.
+\item Расширенный публичный HD ключ $cPke$, который будет в дальнейшем
+  использован для построения адресов активностей.
+\end{enumerate}
 
-So when contract period is over, it should be “renewed” -- we need to
-calculate users ratings and switch contract to the next epoch. This
-renewal is triggered user side by collecting related tx data (note
-that clients still don’t need to hold the whole blockchain but only
-related transactions), running the script and sending its
-validator/redeemer parts along with transaction to the
-network. Redeemer script is simple: it contains only signatures in
-fact. Transaction itself contains script address as input (coins of
-type basec), selected block owner from the last $k$ blocks that will
-receive paying money and user ratings (ratec type). validator should
-check that transaction input fee corresponds to the contract constant
-period fee, that inputs/outputs match and that ratings are assigned
-accordingly to action transactions executed in the last period (and
-strategy of rating assignment). We are also introducing changes to
-coin coloring and validation. It’s allowed to automatically “color” or
-“exchange” paying coins to rating coins using fixed rate that is the
-current protocol constant (ouroroboros update system/constants). It’s
-also forbidden to do it in any other than contract renewal transaction
-so people can’t easily produce action coins (more on this later…
-TODO).
+Отдельно необходимо выделить, что имея темплейт скрипта, мы всегда
+можем проверить, подходит ли под него конкретная
+инстанциация\footnote{Эта возможность используется в биткоин --
+скрипты, не подходящие под фиксированный список темплейтов, не
+распостраняются клиентами TODO LINK}. Это дает возможность выявлять и
+игнорировать модифицированные скрипты.
 
-Rating assignment policy What we want to do is to agree on some rating
+Таким образом, внутреннее состояние контракта характеризуется, в
+первую очередь, его последним периодом $cDelta = [siLast \cdots
+siLast+cPeriod]$, где $siLast$ -- функция, возвращающая слот
+последней транзакции продления или $cStart$, если транзакции
+отсутствуют. Для ее реализации необходимо добавить в plutus поддержку
+встроенного примитива $searchTx$, который с помощью ресурсов узла сети
+произведет поиск по транзакцям, соответствующим предикату. В случае
+$siLast$ необходимо найти последнюю транзакцию перевода средств с
+публичного адреса скрипта. После того, как $cDelta$ определен, скрипт
+производит поиск всех трекинг-транзакций в этом периоде, считает
+рейтинг для каждого пользователя и удостоверяется, что распределение
+рейтинга в транзакции соответствует подсчитанному.
+
+\subsection{Схема транзакций}
+
+Транзакция активности несет в себе информацию об одном виде активности
+и том, сколько каждый ее участник потратил на нее времени. Обозначим
+за $Users = \{U_i\}_{i=1..N}$ множество пользователей, участвующих в
+деятельности типа $ActivityType = actk_k$ для некоторого $k$. $Spent_i
+= \langle \tau S_i, \Delta_i \rangle$ -- временной промежуток (пара из
+начала и длительности, в POSIX миллисекундах и минутах
+соответственно), соответствующий реальной активности пользователя
+$U_i$. Тогда определим пред-транзакцию как $ActionTxPre = \langle
+Users, \{Spent_i\}_{i=1..N}, ActivityType \rangle$. Эта модель
+удовлетворяет требованиям, предъявляемым контрактом, но несет в себе
+избыточную информацию о реальном времени. Необходимо знать две вещи:
+когда произошла транзакция (эта информация выводится из слота блока, в
+который транзакция попадет) и сколько времени пользователи потратили
+на каждого другого участника транзакции в ее же рамках. Заметим, что
+последнее замечание критично ввиду потенциально нетривиального
+пересечения отрезков из множества $\{Spent_i\}$.
+
+Чтобы построить реальную транзакцию активности $ActionTx$, нам
+потребуется превратить $ActionTxPre$ в два списка -- входы и выходы
+транзакции. Пусть $UPk_i$ -- публичный ключ $U_i$. Введем функцию
+$CActOut(C, {U_{i_j}}) : Pk$, которая по контракту и непустому
+подмножеству пользователей $\{U_{i_j}\} \in Users$ возвращает
+публичный ключ. Тут и далее публичный ключ и адрес будут
+использоваться взаимозаменяемо, если это не вызывает
+неоднозначности. $CActOut$ инъективна и имеет конечное множество
+значений размера $2^N = \sum_{i=1}^N{\binom{N}{i}}$. Эта функция
+используется для того, чтобы ассоциировать контракт с адресами
+активности, на которых будут накапливаться $actc_i$.
+
+Пусть $ESet = \{Ev_i\}_{i=1..k}$ есть множество всех событий из
+интервалов в множестве $\{Spent_i\}$, где событием является начало или
+конец промежутка. Легко видеть, что для каждого выделенного интервала
+из $\{\langle Ev_i, Ev_{i+1} \rangle\}_{i=1..k-1}$ есть ровно одно
+активное подмножество $U \subset Users$. Для каждого $U_i$ и его
+$Spent_i$ поделим $Delta_i$ на множество интервалов $\{Delta_{i,j}\}$,
+разбивая в соответствии с $ESet$. Построим множество соответствия
+$Compl_i$: по каждому интервалу $Delta_{i,j}$ получим $CActP_k$ (с
+помощью функции $CActOut$) и объединим все $\{\langle Delta_{i,j},
+CActP_{k,j}\rangle\}$, имеющие один публичный ключ, суммируя по
+интервалам, чтобы избежать дубликатов. Обозначим это множество пар за
+$Compl_i$. Таким образом, $Compl_i$ содержит информацию о том, сколько
+времени $U_i$ взаимодействовал с каждым другим участником транзакции.
+
+Эта процедура проводится для каждого пользователя. Далее
+$\{Compl_i\}_{i=1..N}$ может быть напрямую преобразовано в
+транзакцию. $U_i$ определяет $\sum(Delta_{i,s})$ $tauc$ как вход своей
+подтранзакции, и для каждого $\langle Delta_{i,j}, CActP_{k,j}\rangle
+\in Compl_i$ выставляет выход в соответствующее $Delta_{i,j}$
+количество монет, адрес $CactP_{k,j}$ и цвет монеты
+$ActivityType$. Все подтранзакции объединяются в одну, конкатенируя
+входы и выходы соответственно. В конечном счете, $TxAction$ имеет
+$\langle UPk_i, UDelta_i, \tau c\rangle$ на входах для каждого
+участника, а на выходах $\langle Delta_{i,j}, CActP_{k,j},
+ActivityType\rangle$. Мнемонически, участник разбивает свои временнЫе
+ресурсы $\tau c$ на ресурсы действия.
+
+Валидность транзакции относительно балансов очевидна по построению,
+так как сумма входных монет для каждой подтранзакции определяется
+через сумму выходов и выполняется правило перекрашивания $\tau c
+\rightarrow ActionType$. После преобразования, $TxAction$ не содержит
+излишней информации о метках времени.
+
+\section{Функционал адресов активностей}
+
+Инстанциируем функцию $CActOut(C, U)$, использованную ранее для вывода
+множества публичных ключей из контракта и подмножества его
+пользователей. Одним из требований к ней является возможность
+генерировать парные (к публичным) секретные ключи. Это поможет
+переиспользовать $actc_i$, конвертируя их обратно в $\tau c$. Также,
+хотелось бы минимизировать информацию, идентифицирующую эту функцию в
+скрипте, поскольку валидаторы хранятся в блокчейне явно. Наивный
+подход хранения списка публичных адресов является избыточным по
+памяти. Решение, предлагаемое в этой главе, заключается в
+использовании расширенных HD ключей.
+
+Выделим среди пользователей контракта одного (мастера) и предположим,
+что он владеет расширенным секретным ключом $CSke$. Публичная
+компонента этого ключа $CPke$ находится в конфигурации
+валидатора. Определим функцию $CactOut(C,U)$ следующим образом:
+
+\begin{enumerate}
+\item Занумеруем все сочетания на $Users$ с помощью $userEnum :
+  2^{Users} \rightarrow \mathbb{N} / 2^N$. $userEnum$ может быть
+  определена тривиально. Представим $U_i$ с помощью целого $i \in
+  \mathbb{N}$, а каждое $Users_j \subset 2^{Users}$ в виде
+  отсортированного списка его элементов, представленных натуральными
+  числами. Тогда порядок на $Users_j$ может быть определен
+  лексикографически.
+\item $CActOut(C,Users_j) = CPke/userEnum(Users_j)$. Напомним, что
+  запись $Pke/i$ означает выведенный из $Pke$ дочерний публичный ключ
+  номер $i$ .
+\end{enumerate}
+
+\section{Функция распределения рейтинга}
+
+What we want to do is to agree on some rating
 value (which is special coin type/color) that will represent person’s
 commitment to the contract and so is proportional to the effort. It is
-suggested to scale it to $[0,contractPeriod]$ where period is expressed
-in number of slots, so amount of rating coins for the single contract
+suggested to scale it to $[0,cPeriod]$ where period is expressed in
+number of slots, so amount of rating coins for the single contract
 renewal correlates with the contract time.
 
 Assignment policy requirements are:
@@ -803,101 +894,6 @@ RateAssign.
 $$
 RateAssign = undefined -- TODO
 $$
-
-\section{Proof of activity transaction}
-
-This section will describe how to build time tracking transaction or
-proof of activity.
-
-Transaction represents an act of single activity type spend by a set
-of users simultaneously. Let $Users = \{U_i\}_{i=1..N}$ stay for the
-set of users taking part in the activity and $Spent_i = <tauS_i,
-\Delta_i>$ for the time spent by user $U_i$ -- tuple of start time
-(global time) and duration in seconds. $ActivityType(k)$ = $actc_k$ is
-a coin type representing some activity. Then we define
-pre-transaction: $TxActionPre = <Users, \{Spent_i\}_{i=1..N},
-ActivityType(k)>$. This real-world model satisfies the requirements we
-have in respect to contract -- it captures the basic notice of users
-group, activity type and time intervals. Though as real basecoin
-transactions appear in blocks that have a dedicated timeframe
-themselves (because issued in the fixed slot), we don’t need to put a
-timestamps into it. Moreover, this representation adds more complexity
-due to the fact we still need to derive how much time each pair of
-users spent together, as $Spent_i$ intervals don’t have to be equal
-for every user.
-
-To build a real proof of activity transaction $TxAction$ we will need
-to transform the $TxActionPre$ into the set of spending inputs and
-outputs. Let $UPk_i$ stay for the public key of user participating in
-the contract, which is embedded into the contract. We define a mapping
-function $CActOut(C, {Uij}) : Pk$, that given a contract and a
-non-empty subset of users participating in this contract, returns a
-public key of an action spending address. $CActOut$ is injective and
-has a finite range of size $2^n = \sum{\binom{n}{i}}$ for the chosen
-contract. We use $CActOut$ to associate the contract with the
-temporary action balances that will be used later by the contract
-script to collect tracking information. Let $ESet = \{Ev_i\}_{i=1..k}$
-be the set populated by every interval start or end event from
-$TxActionPre$ $Spent_i$ set. Form the interval set $ISet =
-\{IEv_i\}_{i=1..k-1}$ from the events set. It’s easy to see that in
-every interval from this set there is a particular set of users
-active. Then for every user $U_i$ and his $Spend_i$ we divide the
-$Delta_i$ into chunks accordingly to the $ESet$. We form the
-compliance set $Compl_i$ from $Delta_{i,j}$ by first transforming
-every user set that acts in the $Delta_{i,j}$ to the correspondent
-address $CActP_k$ (using $CActOut$) and then merging the
-$\{<Delta_{i,j}, CActP_{k,j}>\}$ that have the same public key,
-summing up the deltas -- so we don’t have duplicate outputs. Then we
-transform every $Delta_{i,s}$ into $DTau_{i,k}$ by converting the
-time interval to minutes. We end up with $Compl_i$ containing
-$\{<DTau_{i,s}, CActP_{k,s}>\}$ -- the set of time intervals $U_i$
-spends on every group of users he interacted with through the
-$TxActionPre$, with time intervals corresponding to interaction
-length.
-
-This procedure is done for every user. ${Compl_i}$ can be then
-transformed into the real transaction. Each user defines
-$\sum(DTau_{i,s})$ $tauc$ as input and sets his outputs to
-$\{CActP_{k,s}\}$ with $DTau_{i,s}$ correlating with amount of color
-coins of color $actc_i$ for some $i$ chosen before. This user chunks
-can be trivially merged into the single transaction. So in the end the
-transaction $TxAction$ contains the inputs $<UPk_i, UTau_i, tauc>$ and
-outputs $<CActP_k, actc_j>$.
-
-The transaction validity is obvious by construction, as the coins
-spent by every user are matching the sum property (inputs are defined
-as sum of outputs) and tx conforms to coloring rules -- it transforms
-$tauc$ into $actc_j$. The way of transforming $TxActionPre$ to the
-$TxAction$ also satisfies the main property: we save all the crucial
-information about the commitments while removing UTC timestamps
-completely.
-
-\section{Action balances functionality}
-
-The $CActOut(C, U)$ function needs to derive a set of public keys from
-the contract and at the same time give private components of these
-keys to users. This is crucial because otherwise action coins sent to
-action balances can’t be reused and it leads to useless blockchain
-bloat. The solution to this problem is the following. We assign a HD
-wallet spec root private key $CSke$ to one of contract users, which we
-will call contract master. This private key must be
-unhardened. Contract master doesn’t share $CSke$ with anybody
-else. The public component $CPke$ of the root key is hardcoded into
-the contract as a separate field. Now we can instantiate the function
-$CActOut(C,U)$ as following:
-
-\begin{enumerate}
-
-\item Enumerate all choices of user subsets using using $userEnum : U
-  -> \frac{N}{2^n}$. The $userEnum$ function can be defined trivially. One
-  example is the following. Represent every user with a $i \in
-  \mathbb{N}$. Convert every set $U_i$ to the list of users converted to their
-  indices, sorted. Lexicographical order on these strings will define
-  the order on subsets.
-
-\item $CActOut(C,U_i) = CPke/userEnum(U)$. Recall that notation
-  $Pke/i$ defines the $i$th public key derived from $Pke$.
-\end{enumerate}
 
 \section{Contract renewal transaction and assets flow}
 
