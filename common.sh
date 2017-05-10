@@ -8,5 +8,5 @@ function compile() {
 }
 
 function cleanup() {
-    rm -vf ./*.{bib,aux,log,bbl,bcf,blg,run.xml,toc,tct}
+    rm -vf ./*.{aux,log,bbl,bcf,blg,run.xml,toc,tct}
 }
