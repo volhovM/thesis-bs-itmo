@@ -1,6 +1,7 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{itmo-student-thesis}[2017/01/21 v1.1.1]
 
+
 \LoadClass[14pt,a4paper]{extreport}
 
 %% Russian language in UTF-8
@@ -104,7 +105,7 @@
 \\\hline #4 \\\hline \endfirsthead
 \multicolumn{#5}{r}{\normalsizeПродолжение таблицы \thetable{}} \\\hline #4 \endhead
 }{\end{longtable}}
-                    
+
 %% Библиография по ГОСТу. Используем только бибер.
 
 \RequirePackage[
@@ -203,7 +204,7 @@
   \counterwithout{lstlisting}{section}
   \counterwithout{lstlisting}{subsection}
 }
-     
+
 
 %% "Тонкая" настройка теховских штрафов при формировании абзацев.
 
@@ -498,7 +499,7 @@
         }
     }
 
-	\pagenumbering{gobble}
+        \pagenumbering{gobble}
     \begin{titlepage}
         \banhyphens
         \begin{center}\theuniversity\end{center}
@@ -509,7 +510,7 @@
         {\setlength{\tabcolsep}{0.1em}
          \noindent\small\begin{tabu}to\textwidth{X[p]l}
             & Автор: \theauthor \hfilll \signatureplace \\
-            & Направление подготовки (специальность):\; 
+            & Направление подготовки (специальность):\;
                 \begin{minipage}[t]{0.4\textwidth}\thespecialty\end{minipage} \\
             & Квалификация: #1 \\
             & Руководитель: \thesupervisorshort, \thesupervisordegree \hfilll \signatureplace \\
@@ -611,7 +612,7 @@
             \theadvancedtechnologyusage\par
         \pagebreak[3]
         \noindent \textbf{8 Краткая характеристика полученных результатов:}
-            \theresearchsummary\par        
+            \theresearchsummary\par
         \pagebreak[3]
         \noindent \textbf{9 Гранты, полученные при выполнении работы:}
             \theresearchfunding\par
@@ -689,9 +690,8 @@
 %% Включаем times, если надо
 
 \if@shouldusetimes
-	\RequirePackage{pscyr}
-	\def\rmdefault{ftm}
+        \RequirePackage{pscyr}
+        \def\rmdefault{ftm}
 \else
     \RequirePackage{paratype}
-\fi	
-
+\fi
