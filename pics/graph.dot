@@ -40,17 +40,29 @@ digraph G {
 
   subgraph cluster_t { { t }; style=invis; }
 
-  s -> e1; s -> e2; s -> e3; s -> e4;
-  x1 -> t; x2 -> t; x3 -> t; x4 -> t;
+  edge [weight=2, constraint=true];
+  // inputs
+  s -> e1 [label=<c<SUB>e1</SUB>>]; 
+  s -> e2 [label=<c<SUB>e2</SUB>>]; 
+  s -> e3 [label=<c<SUB>e3</SUB>>]; 
+  s -> e4 [label=<c<SUB>e4</SUB>>];
 
-  edge [weight=10000];
+  // outputs
+  x1 -> t [label=<c<SUB>x1</SUB>>]; 
+  x2 -> t [label=<c<SUB>x2</SUB>>]; 
+  x3 -> t [label=<c<SUB>x3</SUB>>]; 
+  x4 -> t [label=<c<SUB>x4</SUB>>];
+
+  // middle edges
+  edge [weight=2, constraint=true];
   e1 -> x1; e2 -> x2; e3 -> x3; e4 -> x4;
-  edge [weight=1];
+  edge [weight=1, constraint=false];
+  e1 -> x2; e1 -> x3; e3 -> x4; e4 -> x3;
+  edge [constraint=true];
 
-  e1 -> x2; e1 -> x3[weight=0]; e3 -> x4; e4 -> x3;
-
+  // helping edges
   edge [style=invis];
 
-  c1 -> c2 -> c3 -> c4 [weight=10000];
-  c1 -> e1; c2 -> e2; c3 -> e3; c4 -> e4; c1 -> s; c2 -> s; c3 -> s; c4 -> s;
+  c1 -> c2 -> c3 -> c4;
+  c1 -> s; c2 -> s; c3 -> s; c4 -> s;
 }
