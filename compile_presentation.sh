@@ -3,5 +3,6 @@
 set -e
 source ./common.sh
 cleanup
-compile thesis
+pdflatex presentation
+pdflatex presentation
 cleanup
