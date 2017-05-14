@@ -6,7 +6,7 @@
 
 module Reward where
 
-import           Data.List       (nub)
+import           Data.List       (intersect, nub)
 import qualified Data.Map.Strict as M
 import qualified Data.Set        as S
 import           Universum
@@ -59,7 +59,9 @@ gloveGame :: ShapleyChar
 gloveGame = (u, v)
   where
     u = S.fromList [1,2,3]
-    v  s = if s `elem` (map S.fromList $ [[1,3],[2,3],[1,2,3]]) then 1 else 0
+    v s | s `elem` (map S.fromList $ [[1,3],[2,3]]) = 1
+        | s == S.fromList [1,2,3] = 2
+        | otherwise = 0
 
 testGlove :: IO ()
 testGlove = do
@@ -89,4 +91,23 @@ respResTest = RespResult { rTauN = 10, rClocks = M.fromList [(1,5), (2,3), (3,1)
 testComs :: IO ()
 testComs = do
     let sh@(users,v) = shapleyComs respResTest
-    forM_ users $ \u -> putText $ show u <> ": " <> show (shapleyCalculate sh u)
+    let vals = normalize $ map (shapleyCalculate sh) $ S.toList users
+    forM_ ([1..] `zip` vals) print
+  where
+    normalize l = let m = maximum l in map (/ m) l
+
+
+data FilterTerm = FilterTerm [Users]
+
+shapleyFilter :: FilterTerm -> ShapleyChar
+shapleyFilter (FilterTerm fusers) =
+    (mconcat fusers, \u -> fromIntegral $ length $ fusers `intersect` subsets u)
+
+testFilter :: IO ()
+testFilter = do
+    let filterTerm = FilterTerm $ nub $ map S.fromList [[1], [2], [2,3]]
+        sh@(users,v) = shapleyFilter filterTerm
+    let vals = normalize $ map (shapleyCalculate sh) $ S.toList users
+    forM_ ([1..] `zip` vals) print
+  where
+    normalize l = let m = sum l in map (/ m) l
