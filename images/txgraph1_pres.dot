@@ -1,0 +1,100 @@
+digraph G {
+  node [shape="circle", style=filled];
+  ratio="compress";
+  rankdir = LR;
+
+  c1 [fillcolor=yellow]; 
+  c2 [fillcolor=cyan]; 
+  c3 [fillcolor=pink]; 
+  c4 [fillcolor=grey];
+
+  subgraph coloring {
+    { rank=same; c1 c2 c3 c4 }
+    c1 -> c2;
+    c1 -> c3;
+    c3 -> c4 -> c3; }
+
+  node [shape="box", fillcolor=white];
+
+  subgraph cluster_tx_full {
+    subgraph cluster_tx {
+      label = "tx"
+      color=lightgrey;
+  
+       subgraph cluster_tx_in {
+         label = "txIn"
+         i1 [label="50 c1", fillcolor=yellow]
+         i2 [label="20 c4", fillcolor=grey]
+       }
+  
+       subgraph cluster_tx_out {
+         label = "txOut"
+         o1 [label="40 c3", fillcolor=pink]
+         o2 [label="30 c2", fillcolor=cyan]
+       }
+      edge [style=invis];
+      i1 -> o1
+    }
+  
+    node [shape=plaintext]
+  
+    ui1[label=<U<SUB>1</SUB>>]
+    ui2[label=<U<SUB>2</SUB>>]
+    uo1[label=<U<SUB>4</SUB>>]
+    uo2[label=<U<SUB>3</SUB>>]
+
+    ui1 -> i1; ui2 -> i2; o1 -> uo1; o2 -> uo2;
+  }
+
+//  edge [style=invis];
+//  c1 -> ui1; c2 -> ui1; c3 -> ui2; c4 -> ui2;
+//  edge [style=solid];
+  node [shape=circle]
+
+//  subgraph flowgraph {
+//    s [fillcolor=white]; t [fillcolor=white];
+//  
+//    e1[label=<e<SUB>1</SUB>>, fillcolor=yellow];
+//    e2[label=<e<SUB>2</SUB>>, fillcolor=grey];
+//    x1[label=<x<SUB>1</SUB>>, fillcolor=cyan];
+//    x2[label=<x<SUB>2</SUB>>, fillcolor=pink];
+//  
+//  
+//    subgraph cluster_s { { s }; style=invis; }
+//  
+//    subgraph cluster_0 {
+//      {rank=same; e1 e2}
+//      style=invis;
+//      e1 -> e2 [weight=1000, style=invis];
+//    }
+//  
+//    subgraph cluster_1 {
+//      {rank=same; x1 x2}
+//      style=invis;
+//      x1 -> x2  [weight=1000, style=invis];
+//    }
+//  
+//    subgraph cluster_t { { t }; style=invis; }
+//  
+//    // inputs
+//    s -> e1 [label="50/50"];
+//    s -> e2 [label="20/20"];
+//  
+//    // outputs
+//    x1 -> t [label="30/30"];
+//    x2 -> t [label="40/40"];
+//  
+//    // middle edges
+//    edge [weight=2, constraint=true];
+//    e1 -> x1 [label="30/M"]; 
+//    e2 -> x2 [label="20/M"]; 
+//    edge [weight=1, constraint=false];
+//    e1 -> x2 [label="20/M"]; 
+//    edge [constraint=true];
+//  
+//    // helping edges
+//    edge [style=invis];
+//  
+//  }
+
+}
