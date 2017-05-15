@@ -5,34 +5,170 @@
 \usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[english,russian]{babel}
+\usepackage[style=authoryear]{biblatex}
 \usetheme{Warsaw}
 
 \addtobeamertemplate{navigation symbols}{}{%
     \usebeamerfont{footline}%
-    \usebeamercolor[fg]{footline}%
+    \usebeamercolor[black]{footline}%
     \hspace{10em}%
     \insertframenumber/\inserttotalframenumber
 }
 
 %Information to be included in the title page:
-\title{Тайм-трекинг пользовательских действий на распределенной блокчейн-цепи}
-\author{Михаил Волхов, M3438}
-\institute{Санкт-Петербург, Университет ИТМО}
-\date{2017}
+\title[Тайм-трекинг на блокчейне]{Тайм-трекинг пользовательских действий на распределенной блокчейн-цепи}
 
 \begin{document}
 
+\author[Михаил Волхов, M3438]{
+  Студент: Михаил Волхов, M3438\\
+  Руководитель: Штукенберг Д.Г., тьютор кафедры КТ \\
+  Рецензцент: Чепурной А.И, специалист, IOHK Research
+}
+\institute{Кафедра Компьютерных Технологий \\ факультет Информационных Технологий и Программирования \\ Университет ИТМО, Санкт-Петербург}
+\date{2017}
+
 \frame{\titlepage}
 
+\section{Введение и цели}
+
+\subsection{Блокчейн и криптовалюты}
+
 \begin{frame}
-  \frametitle{Цели и задачи}
-  Чтобы все было хорошо и никто не болел.
+  \frametitle{Блокчейн}
+
+  Блок -- это хедер с хэшом и какие-то данные. Блоки в цепочку
+  выстраиваются. Разные алгоритмы консенсуса (pow/pos).
+  \begin{itemize}
+  \item Открытость
+  \item Свобода
+  \item Веганство
+  \item Лучше чем BFT
+  \end{itemize}
 \end{frame}
+
+\begin{frame}
+  \frametitle{Криптовалюта}
+
+  Можно отправлять денежки. Транзакция -- это входы и выходы. Адреса
+  -- это публичные ключи (работают, потому что ассиметричная схема
+  подписей).
+\end{frame}
+
+\begin{frame}
+  \frametitle{Скриптинг и смарт-контракты}
+
+  Такие адреса, что можно с них денежки хитро снимать. Привести пример аукциона из Hawk и что-нибудь из ethereum.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Цветные монетки}
+
+  Дополнительная информация. Круто!
+\end{frame}
+
+\subsection{Тайм-трекинг}
+
+\begin{frame}
+  \frametitle{Органайзер против тайм-трекера}
+
+  Почему гугл документ -- это не совсем то же, что и arbtt
+\end{frame}
+
+\begin{frame}
+  \frametitle{org-mode и статистика}
+
+  Показать, как там трекать и свою статистику
+\end{frame}
+
+\begin{frame}
+  \frametitle{Мультипользовательский тайм-трекинг}
+
+  Почему то, что в YT -- это не очень.
+\end{frame}
+
+\subsection{Цели и задачи}
+
+\begin{frame}
+  \frametitle{Идея}
+
+  Написать тайм-трекер, который умеет в мультипользовательские
+  транзакции, обязанности и рейтинг.
+\end{frame}
+
+\section{Проделанная работа}
+
+\subsection{База и модификации}
+
+\begin{frame}
+  \frametitle{Ouroboros и слоттинг}
+  Почему именно ouroboros.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Граф покраски и валидация }
+
+  Показать, чо за граф, как транзакцию валидировать через поток.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Реальная инстанциация}
+
+  Предложил реальную схему, показал как и зачем. Показал, что ничего
+  не сломается.
+\end{frame}
+
+\subsection{Система контрактов}
+
+\begin{frame}
+  \frametitle{Контракт, обязательства}
+
+  Формализовал это.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Выставление рейтинга}
+
+  Написал это через вектор Шепли, получилось прикольно и какие-то
+  свойства есть.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Общая схема}
+
+  Про скрипт и транзакцию обновления.
+\end{frame}
+
+\subsection{Инфраструктура}
+
+\begin{frame}
+  \frametitle{Проблема и логический слой}
+
+  Что вообще за проблема, и вкратце про API.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Транспортный слой}
+
+  Обзорчик на то, что можно и почему, показать какие проблемы возникают.
+\end{frame}
+
+\section{Результаты}
 
 \begin{frame}
   \frametitle{Результаты}
-  Сижу, сконцентрировался -- хорошо. Значит, выполнено.
+
+  Спроектировал решение, получилось хорошо, всем требованиям удовлетворяет (показать).
 \end{frame}
 
+\section{}
+
+\begin{frame}
+
+  \begin{center}
+    \Huge Вопросы?
+  \end{center}
+
+\end{frame}
 
 \end{document}
