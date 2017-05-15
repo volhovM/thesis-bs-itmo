@@ -628,9 +628,10 @@ $basec \in Col$ -- выделенный цвет. В следующей глав
 $\Delta = 0$ для рассматриваемой $Tx$.
 
 Пусть $txIn_m = MergeC(txIn)$. Выразим формально второе требование:
-$$
-\exists H = \{H_i\}_i. \ MergeC(H) = txIn_b \wedge \forall coin_o = (n_o,c_o) \in txOut . \ \exists i . \ H_i = coin_o
-$$
+\begin{align*}
+  \exists H = &\{H_i\}_i. \ MergeC(H) = txIn_b \ \wedge \ \\
+              &\forall (n_o,c_o) \in txOut . \ \exists i . \ H_i = (n_0,c_i) \wedge C_g(c_i) = c_o
+\end{align*}
 
 Покажем, что проверка этого условия сводится к решению задачи о
 максимальном потоке в графе. Пусть $D$ -- ориентированный граф,
