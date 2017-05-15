@@ -3,6 +3,5 @@
 set -e
 source ./common.sh
 cleanup
-pdflatex presentation
-pdflatex presentation
+compile presentation
 cleanup

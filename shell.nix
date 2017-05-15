@@ -7,6 +7,7 @@ with import <nixpkgs> {}; {
           scheme-small
           biber
           cm-super
+          cm-super-t2a
           collection-langcyrillic
           csquotes
           tabu

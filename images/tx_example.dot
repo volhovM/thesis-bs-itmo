@@ -1,0 +1,39 @@
+digraph G {
+  node [shape="box"];
+
+  rankdir = LR;
+  ratio="compress";
+
+  subgraph cluster_tx {
+    label = "tx"
+    color=lightgrey;
+
+     subgraph cluster_tx_in {
+       label = "txIn"
+       i1 [label="50 c"]
+       i2 [label="20 c"]
+       i3 [label="10 c"]
+     }
+
+     subgraph cluster_tx_out {
+       label = "txOut"
+       o1 [label="25 c"]
+       o2 [label="45 c"]
+     }
+    edge [style=invis];
+    i1 -> o1
+    i3 -> o2
+  }
+
+  node [shape=plaintext]
+
+  ui1[label=<Addr<SUB>1</SUB>>]
+  ui2[label=<Addr<SUB>2</SUB>>]
+  ui3[label=<Addr<SUB>3</SUB>>]
+  uo1[label=<Addr<SUB>4</SUB>>]
+  uo2[label=<Addr<SUB>5</SUB>>]
+
+
+  ui1 -> i1; ui2 -> i2; ui3 -> i3; o1 -> uo1; o2 -> uo2;
+
+}
