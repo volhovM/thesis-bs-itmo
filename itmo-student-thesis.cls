@@ -2,7 +2,7 @@
 \ProvidesClass{itmo-student-thesis}[2017/01/21 v1.1.1]
 
 
-\LoadClass[14pt,a4paper]{extreport}
+\LoadClass[11pt,a4paper]{extreport}
 
 %% Russian language in UTF-8
 
