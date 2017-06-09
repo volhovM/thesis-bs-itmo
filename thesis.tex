@@ -1,31 +1,10 @@
 \documentclass[specification,annotation]{itmo-student-thesis}
-% \documentclass[specification,annotation]{itmo-student-thesis}
 
-%% Опции пакета:
-%% - specification - если есть, генерируется задание, иначе не генерируется
-%% - annotation - если есть, генерируется аннотация, иначе не генерируется
-%% - times - делает все шрифтом Times New Roman, требует пакета pscyr.
-
-%% Делает запятую в формулах более интеллектуальной, например:
-%% $1,5x$ будет читаться как полтора икса, а не один запятая пять иксов.
-%% Однако если написать $1, 5x$, то все будет как прежде.
 \usepackage{icomma}
-
-%% Данные пакеты необязательны к использованию в бакалаврских/магистерских
-%% Они нужны для иллюстративных целей
-%% Начало
-% \usepackage{tikz}
-% \usetikzlibrary{arrows}
-% \usepackage{filecontents}
 \urlstyle{sf}
 \graphicspath{ {images/} }
 \PassOptionsToPackage{hyphens}{url}
 
-%% Конец
-
-%% Указываем файл с библиографией.
-% \addbibresource{bib/cryptobib-abbrev0.bib}
-% \addbibresource{bib/cryptobib-crossref.bib}
 \addbibresource{custom.bib}
 
 \begin{document}
@@ -43,6 +22,7 @@
 % \defencedate{15}{июня}{2015}
 
 % \addconsultant{Йонн Мостовой}{без степени, без звания}
+\secretary{Павлова О.Н.}
 
 %% Задание и аннотация
 %%% Техническое задание и исходные данные к работе
@@ -239,6 +219,8 @@ zk-доказательств). В-третьих, высокий рейтинг
 
 %% Начало содержательной части.
 \chapter{Обзор предметной области}
+
+\startrelatedwork
 
 \section{Децентрализованные платежные системы}
 
@@ -637,6 +619,8 @@ Cardano SL использует схему цифровых подписей Ed2
 интерфейса. Расширенные HD ключи/адреса являются основными с точки
 зрения большинства алгоритмов (только обладатель публичного HD ключа
 может быть лидером слота и т.д.).
+
+\finishrelatedwork
 
 \chapterconclusion
 
