@@ -274,8 +274,8 @@
 \newcommand{\@iffiveyears}{\iffieldint{year}{\ifnumless{\thefield{year}}{\@yearminusfive}{\skipentry}{}}{\skipentry}}%
 \newcommand{\@iftenyears}{\iffieldint{year}{\ifnumless{\thefield{year}}{\@yearminusfive}{\ifnumless{\thefield{year}}{\@yearminusten}{\skipentry}{}}{\skipentry}}{\skipentry}}%
 \newcommand{\@ifveryold}{\iffieldint{year}{\ifnumless{\thefield{year}}{\@yearminusten}{}{\skipentry}}{}}%
-\newcommand{\@ifrussian}{\iffieldundef{langid}{}{\iffieldequalstr{langid}{russian}{}{\skipentry}}}%
-\newcommand{\@ifforeign}{\iffieldundef{langid}{\skipentry}{\iffieldequalstr{langid}{russian}{\skipentry}{}}}%
+\newcommand{\@ifrussian}{\iffieldundef{langid}{\skipentry}{\iffieldequalstr{langid}{russian}{}{\skipentry}}}%
+\newcommand{\@ifforeign}{\iffieldundef{langid}{}{\iffieldequalstr{langid}{russian}{\skipentry}{}}}%
 %%% Сами фильтры
 \defbibcheck{bibch@russiansourcesfiveyears}{\@iffiveyears\@ifrussian}%
 \defbibcheck{bibch@russiansourcestenyears}{\@iftenyears\@ifrussian}%
